@@ -684,6 +684,74 @@ function applyTheme() {
 }
 applyTheme();
 
+const IS_IOS = /iPad|iPhone|iPod/.test(navigator.userAgent || '') && !('MSStream' in window);
+const IS_STANDALONE = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+
+let _persistenceTried = false;
+async function requestPersistence() {
+  if (_persistenceTried) return;
+  _persistenceTried = true;
+  try { if (navigator.storage && navigator.storage.persist) await navigator.storage.persist(); } catch {}
+}
+
+async function getAppFile() {
+  let blob;
+  try {
+    const res = await fetch(location.href);
+    if (!res.ok) throw new Error('fetch ' + res.status);
+    blob = await res.blob();
+  } catch {
+    blob = new Blob(['<!doctype html>\n' + document.documentElement.outerHTML], { type: 'text/html' });
+  }
+  return new File([blob], 'smartcard.html', { type: 'text/html' });
+}
+async function shareApp() {
+  let file;
+  try { file = await getAppFile(); } catch (e) { alert('Could not prepare file: ' + (e.message || e)); return; }
+  try {
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ files: [file], title: 'Smart Card', text: 'Soldierization study app' });
+    } else if (navigator.share) {
+      await navigator.share({ title: 'Smart Card', text: 'Soldierization study app — open the attached file' });
+    } else {
+      const url = URL.createObjectURL(file);
+      const a = document.createElement('a'); a.href = url; a.download = 'smartcard.html';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+  } catch (e) { if (e && e.name !== 'AbortError') alert('Could not share: ' + (e.message || e)); }
+}
+
+function exportProgress() {
+  const payload = JSON.stringify({ v: 1, store, settings });
+  const done = () => alert(`Progress copied (${payload.length} chars). Paste it on the other phone via Settings → Restore progress.`);
+  const fallback = () => {
+    const ta = document.createElement('textarea');
+    ta.value = payload; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); done(); }
+    catch { prompt('Copy this progress code:', payload); }
+    ta.remove();
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(payload).then(done, fallback);
+  } else fallback();
+}
+function importProgress() {
+  const txt = prompt('Paste your progress code:');
+  if (!txt) return;
+  try {
+    const data = JSON.parse(txt.trim());
+    if (!data || !data.store) throw new Error('not a progress code');
+    Object.assign(store, data.store);
+    if (data.settings) Object.assign(settings, data.settings);
+    saveStore(); saveSettings(); applyTheme();
+    alert('Progress restored.');
+    closeSettings();
+    handleRoute();
+  } catch (e) { alert('Invalid progress code: ' + (e.message || e)); }
+}
+
 function vibe(ms) { if (settings.haptics && navigator.vibrate) try { navigator.vibrate(ms); } catch {} }
 function speak(text) {
   if (!settings.tts || !window.speechSynthesis) return;
@@ -837,6 +905,20 @@ function openSettings() {
   // sound
   sheet.appendChild(toggleRow('Audio playback', 'Play bundled Army Song / Soldier\'s Creed recordings', 'sound'));
 
+  // share + backup
+  const shareRow = h('div', { class: 'setting-row' });
+  shareRow.appendChild(h('div', {}, h('div', { class: 'label', text: 'Share this app' }), h('div', { class: 'desc', text: 'Send the file to another phone (AirDrop, Messages, etc.)' })));
+  shareRow.appendChild(h('button', { class: 'btn', style: 'min-height:36px;padding:0 14px;font-size:.875rem', text: 'Share', onclick: shareApp }));
+  sheet.appendChild(shareRow);
+
+  const backupRow = h('div', { class: 'setting-row' });
+  backupRow.appendChild(h('div', {}, h('div', { class: 'label', text: 'Backup progress' }), h('div', { class: 'desc', text: 'Copy a code you can paste into another phone (or save before iOS clears storage)' })));
+  const bb = h('div', { style: 'display:flex;gap:6px' });
+  bb.appendChild(h('button', { class: 'btn', style: 'min-height:36px;padding:0 12px;font-size:.875rem', text: 'Copy', onclick: exportProgress }));
+  bb.appendChild(h('button', { class: 'btn', style: 'min-height:36px;padding:0 12px;font-size:.875rem', text: 'Restore', onclick: importProgress }));
+  backupRow.appendChild(bb);
+  sheet.appendChild(backupRow);
+
   // audio import
   const audioWrap = h('div', { style: 'margin-top:8px' });
   audioWrap.appendChild(h('div', { class: 't-micro', style: 'margin-bottom:6px', text: 'Bundled recordings' }));
@@ -936,10 +1018,13 @@ route(/^\/$/, () => {
   setTopbar({ title: '', rightIcon: ICON.settings, rightAction: openSettings, rightLabel: 'Settings' });
   const root = h('div', { class: 'screen-narrow' });
 
-  // first-launch banner: Android note
+  // first-launch banner — iOS-aware
   if (!store.banner_seen_at) {
     const banner = h('div', { class: 'banner' });
-    banner.innerHTML = `<button class="x" aria-label="Dismiss">${ICON.x}</button><b>Tip:</b> Open this from Chrome on Android, then tap menu → "Add to Home screen" so progress persists. On iPhone: open from Files for best results.`;
+    const tip = IS_IOS
+      ? '<b>iPhone tip:</b> Save this file in <b>Files</b> (long-press → Move) and Favorite it. Re-open from Files each session. Use Settings → Backup progress to keep your data safe across re-opens.'
+      : '<b>Android tip:</b> Open in Chrome, then menu → <b>Add to Home screen</b> so progress saves long-term and you get an app icon.';
+    banner.innerHTML = `<button class="x" aria-label="Dismiss">${ICON.x}</button>${tip}`;
     banner.querySelector('.x').onclick = () => { store.banner_seen_at = Date.now(); saveStore(); banner.remove(); };
     root.appendChild(banner);
   }
@@ -2005,6 +2090,9 @@ function endOfSession({ title, score, total, missedItems = [], onReview, onDone 
 window.addEventListener('DOMContentLoaded', () => {
   if (!location.hash) location.hash = '#/';
   handleRoute();
+  // Request persistent storage on the first user gesture (iOS/Android best-effort).
+  document.addEventListener('pointerdown', requestPersistence, { once: true });
+  document.addEventListener('keydown', requestPersistence, { once: true });
 });
 
 </script>

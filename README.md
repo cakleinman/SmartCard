@@ -24,13 +24,17 @@ The whole app is one file: `index.html`.
 
 ### On iPhone
 
-1. AirDrop or share `index.html` to the phone. Save it to **Files**.
-2. Open it from Files. It launches in Safari.
-3. Note: iOS does not let `file://` pages be added to the Home Screen. The app still works — re-open it from Files when you want to study. If you want a true Home Screen icon on iOS, host the file on any web URL once and Add to Home Screen from there; from then on it's local.
+1. AirDrop or share `index.html` to the phone. Save it to **Files** (long-press → Move). Mark it as a Favorite for fast re-opening.
+2. Tap to open. It launches in Safari from `file://`.
+3. iOS won't let `file://` pages be added to the Home Screen. Two mitigations are built in:
+   - The first time you tap, the app asks iOS for **persistent storage** (`navigator.storage.persist()`). When granted, your progress survives the 7-day eviction.
+   - **Settings → Backup progress → Copy** writes a JSON code to your clipboard. Save it to Notes or Messages. Settings → **Restore** pastes it back if iOS ever clears the data, or onto a new phone.
 
 ### Sharing it onward
 
-Send the `index.html` file. That's it. No URL, no QR code. AirDrop, email, Signal, Telegram, Google Drive — all fine.
+In the app: **Settings → Share this app** → uses the system share sheet to send the file via AirDrop, Messages, Mail, Drive, etc. (Android Chrome and iOS Safari ≥ 17 support the `Web Share` files API; on older browsers it falls back to a download.)
+
+Or just send the `index.html` file directly through any channel.
 
 ## Study modes
 
