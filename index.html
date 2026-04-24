@@ -837,6 +837,14 @@ function openSettings() {
   // sound
   sheet.appendChild(toggleRow('Audio playback', 'Play bundled Army Song / Soldier\'s Creed recordings', 'sound'));
 
+  // audio import
+  const audioWrap = h('div', { style: 'margin-top:8px' });
+  audioWrap.appendChild(h('div', { class: 't-micro', style: 'margin-bottom:6px', text: 'Bundled recordings' }));
+  audioWrap.appendChild(audioImportRow('creed', "Soldier's Creed"));
+  audioWrap.appendChild(audioImportRow('song', 'Army Song'));
+  audioWrap.appendChild(h('div', { class: 't-caption', style: 'margin-top:6px', text: 'Stored on this phone only. Use public-domain MP3s from the U.S. Army Band.' }));
+  sheet.appendChild(audioWrap);
+
   // reset
   const reset = h('button', { class: 'btn btn-block', style: 'margin-top:12px;color:var(--danger)', onclick: () => {
     if (confirm('Reset all progress? This cannot be undone.')) {
@@ -856,6 +864,51 @@ function openSettings() {
   requestAnimationFrame(() => { backdrop.classList.add('open'); sheet.classList.add('open'); });
   setTimeout(() => sheet.focus(), 250);
 }
+function getStoredAudio(id) { try { return localStorage.getItem('smartcard.audio.' + id); } catch { return null; } }
+function setStoredAudio(id, dataUri) {
+  try { localStorage.setItem('smartcard.audio.' + id, dataUri); return true; }
+  catch (e) { alert('Could not save audio — file too large for this browser. Try a smaller bitrate (≤ 96 kbps).'); return false; }
+}
+function clearStoredAudio(id) { try { localStorage.removeItem('smartcard.audio.' + id); } catch {} }
+
+function audioImportRow(id, label) {
+  const row = h('div', { class: 'setting-row' });
+  const left = h('div', {});
+  left.appendChild(h('div', { class: 'label', text: label }));
+  const status = h('div', { class: 'desc' });
+  const stored = getStoredAudio(id);
+  status.textContent = stored ? `Imported · ${(stored.length * 0.75 / 1024 | 0)} KB` : 'Not imported';
+  left.appendChild(status);
+  row.appendChild(left);
+
+  const right = h('div', { style: 'display:flex;gap:6px' });
+  const btn = h('button', { class: 'btn', style: 'min-height:36px;padding:0 12px;font-size:.875rem', text: stored ? 'Replace' : 'Import' });
+  const file = h('input', { type: 'file', accept: 'audio/*,audio/mpeg,audio/mp3', style: 'display:none' });
+  btn.onclick = () => file.click();
+  file.onchange = () => {
+    const f = file.files && file.files[0];
+    if (!f) return;
+    if (f.size > 4 * 1024 * 1024) { alert('That file is over 4 MB — pick a lower-bitrate MP3 (≤ 96 kbps mono is ideal).'); return; }
+    const r = new FileReader();
+    r.onload = () => {
+      const ok = setStoredAudio(id, r.result);
+      if (ok) {
+        status.textContent = `Imported · ${(f.size / 1024 | 0)} KB`;
+        btn.textContent = 'Replace';
+        if (!row.querySelector('.rm')) right.appendChild(rmBtn);
+      }
+    };
+    r.readAsDataURL(f);
+  };
+  right.appendChild(btn);
+  right.appendChild(file);
+  const rmBtn = h('button', { class: 'btn rm', style: 'min-height:36px;padding:0 12px;font-size:.875rem;color:var(--danger)', text: 'Remove' });
+  rmBtn.onclick = () => { clearStoredAudio(id); status.textContent = 'Not imported'; btn.textContent = 'Import'; rmBtn.remove(); };
+  if (stored) right.appendChild(rmBtn);
+  row.appendChild(right);
+  return row;
+}
+
 function toggleRow(label, desc, key) {
   const row = h('div', { class: 'setting-row' });
   row.appendChild(h('div', {}, h('div', { class: 'label' }, label), h('div', { class: 'desc' }, desc)));
@@ -1219,17 +1272,20 @@ route(/^\/d\/([^/]+)\/audio$/, (deckId) => {
   const root = h('div', { class: 'screen-narrow' });
   const lines = passageLines(d);
 
-  // Bundled audio: read from <script id="audio-...">
+  // Audio source priority: localStorage (user-imported) > <script id="audio-…"> bundle > nothing
   const audioId = d.audio;
-  const b64 = audioId ? document.getElementById('audio-' + audioId)?.textContent.trim() : '';
+  const stored = audioId ? getStoredAudio(audioId) : null;
+  const inline = audioId ? document.getElementById('audio-' + audioId)?.textContent.trim() : '';
+  const b64 = stored || inline;
 
   const card = h('div', { class: 'card card-pad' });
   if (b64) {
-    const audio = h('audio', { controls: 'controls', preload: 'metadata' });
+    const audio = h('audio', { controls: 'controls', preload: 'metadata', style: 'width:100%' });
     audio.src = b64.startsWith('data:') ? b64 : 'data:audio/mp3;base64,' + b64;
     card.appendChild(audio);
+    if (stored) card.appendChild(h('div', { class: 't-caption', style: 'margin-top:8px', text: 'Imported recording (stored on this phone)' }));
   } else {
-    card.appendChild(h('div', { class: 'banner', text: 'No bundled recording found in this build. Tap "Read aloud" below to use the device voice.' }));
+    card.appendChild(h('div', { class: 'banner', text: 'No recording bundled with this app. Settings → Bundled recordings to import an MP3, or tap below to hear the device voice.' }));
     const ttsBtn = h('button', { class: 'btn btn-primary btn-block', text: 'Read aloud (TTS)' });
     ttsBtn.onclick = () => {
       if (!window.speechSynthesis) return alert('Speech synthesis not supported on this browser.');

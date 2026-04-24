@@ -46,21 +46,13 @@ Send the `index.html` file. That's it. No URL, no QR code. AirDrop, email, Signa
 
 ## Audio
 
-The app supports two playback paths for the Soldier's Creed and Army Song:
+The app has three playback paths for the Soldier's Creed and Army Song, in priority order:
 
-1. **Bundled MP3** (recommended): paste base64-encoded audio into the placeholders at the bottom of `index.html`:
-   - `<script id="audio-creed" type="text/plain">…</script>`
-   - `<script id="audio-song" type="text/plain">…</script>`
+1. **In-app import (per phone)** — Settings → Bundled recordings → Import. Pick an MP3 from the phone's Files. It's stored in `localStorage` on that phone only. Use a low-bitrate MP3 (≤ 96 kbps mono, < 4 MB) so it fits in the storage budget.
+2. **Pre-bundled into the file** — run `./bundle-audio.sh` on a machine with internet. It downloads the public-domain U.S. Army Band recordings from Internet Archive and inlines them into `index.html` as base64 `data:` URIs. Distribute the resulting file. If the default download URLs break, pass local file paths: `./bundle-audio.sh song.mp3 creed.mp3`.
+3. **Device TTS fallback** — if no audio is found, the Audio mode shows a "Read aloud" button that uses the device's speech synthesis. Free, but robotic; the Army Song really needs to be sung.
 
-   To bundle a recording, download a public-domain MP3 from Internet Archive's [U.S. Army Bands Online](https://archive.org/details/TheArmyGoesRollingAlong) and run:
-   ```sh
-   base64 -w0 song.mp3 > song.b64
-   ```
-   Then paste the contents of `song.b64` between the script tags.
-
-2. **Device TTS** (default): if no bundled audio is present, the Audio mode shows a "Read aloud" button that uses the device's speech synthesis. Free, but it sounds like a robot reading; the Army Song needs to be sung.
-
-The U.S. Army Band's recordings are public domain under 17 U.S.C. § 105.
+U.S. Army Band recordings are public domain under 17 U.S.C. § 105.
 
 ## Privacy & data
 
