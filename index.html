@@ -435,7 +435,7 @@ a { color: var(--accent); text-decoration: none; }
     },
     "chain": {
       "title": "Chain of Command",
-      "hint": "13 ranks, President to Squad (Guard variant)",
+      "hint": "14 levels, President down to Squad (National Guard variant)",
       "type": "ordered",
       "modes": ["sequence", "flash"],
       "items": [
@@ -524,7 +524,7 @@ a { color: var(--accent); text-decoration: none; }
         { "id": "f-dress",  "front": "Dress Right Dress / Ready Front", "back": "Establish lateral alignment and interval, then return to attention." },
         { "id": "f-recov",  "front": "Cover / Recover", "back": "Establish or re-establish alignment behind the person to your front." },
         { "id": "f-ranks",  "front": "Open Ranks / Close Ranks", "back": "Increase or decrease the distance between ranks for inspection." },
-        { "id": "f-extend", "front": "Extend / Assemble", "back": "Spread the formation out / bring the formation back together." },
+        { "id": "f-extend", "front": "Extend to the Left / Assemble to the Right", "back": "Spread the formation out / bring the formation back together." },
         { "id": "f-report", "front": "Receive the Report / Report", "back": "Subordinate leaders report status of their unit to the commander." },
         { "id": "f-fallout", "front": "Fall Out / Dismissed", "back": "Leave the formation; Dismissed ends the formation." }
       ]
@@ -847,9 +847,12 @@ function openSettings() {
 
   // reset
   const reset = h('button', { class: 'btn btn-block', style: 'margin-top:12px;color:var(--danger)', onclick: () => {
-    if (confirm('Reset all progress? This cannot be undone.')) {
+    if (confirm('Reset all progress? This cannot be undone. Imported audio is also cleared.')) {
       store = { cards: {}, progress: {}, lastDeck: null, lastMode: null, newToday: { date: '', count: 0 }, scoreBest: {} };
       saveStore();
+      try {
+        Object.keys(localStorage).filter(k => k.startsWith('smartcard.audio.')).forEach(k => localStorage.removeItem(k));
+      } catch {}
       closeSettings();
       handleRoute();
     }
@@ -1086,10 +1089,11 @@ route(/^\/d\/([^/]+)\/speed$/, (deckId) => {
     if (ms <= 0) {
       clearInterval(timerInterval);
       const best = store.scoreBest[deckId + ':speed'] || 0;
-      if (score > best) store.scoreBest[deckId + ':speed'] = score;
+      const newBest = score > best;
+      if (newBest) store.scoreBest[deckId + ':speed'] = score;
       saveStore();
       return endOfSession({
-        title: `${d.title} · Speed round`,
+        title: `${d.title} · Speed round` + (newBest ? ' · new best!' : ` · best ${best}`),
         score, total: asked,
         missedItems: [],
         onDone: () => navigate(`/d/${deckId}`)
@@ -1256,8 +1260,9 @@ route(/^\/d\/([^/]+)\/recall60$/, (deckId) => {
 
   function finish() {
     clearInterval(interval);
-    targets.forEach(t => { if (!found.has(t.id)) recordResult(t.id, 'again'); });
-    endOfSession({ title: `${d.title} · Recall in 60s`, score: found.size, total: targets.length, onDone: () => navigate(`/d/${deckId}`) });
+    const missedNames = [];
+    targets.forEach(t => { if (!found.has(t.id)) { recordResult(t.id, 'again'); missedNames.push(t.full); } });
+    endOfSession({ title: `${d.title} · Recall in 60s`, score: found.size, total: targets.length, missedItems: missedNames, onDone: () => navigate(`/d/${deckId}`) });
   }
 });
 
@@ -1832,7 +1837,7 @@ route(/^\/d\/([^/]+)\/flash(\?.*)?$/, (deckId) => {
     else learned.push(it);
   }
   const order = [...shuffle(due), ...shuffle(unseen).slice(0, NEW_PER_DAY_CAP), ...shuffle(learned)];
-  const total = order.length;
+  let total = order.length;
   let idx = 0, missed = [], correct = 0;
   // browse mode: if ?browse=1 just iterate without scoring
   const browse = location.hash.includes('browse=1');
@@ -1846,7 +1851,10 @@ route(/^\/d\/([^/]+)\/flash(\?.*)?$/, (deckId) => {
         onReview: missed.length ? () => {
           const ids = new Set(missed.map(m => m.id));
           const order2 = items.filter(it => ids.has(it.id));
-          missed = []; correct = 0; idx = 0; order.length = 0; order.push(...order2); total2(order.length);
+          missed = []; correct = 0; idx = 0;
+          order.length = 0; order.push(...order2);
+          total = order.length;
+          render();
         } : null
       });
     }
@@ -1945,7 +1953,6 @@ route(/^\/d\/([^/]+)\/flash(\?.*)?$/, (deckId) => {
     const sh = shuffle(rest);
     for (let i = 0; i < sh.length; i++) order[idx + i] = sh[i];
   }
-  function total2(n) { /* called when reviewing misses */ }
 
   render();
 });
