@@ -139,7 +139,7 @@ a { color: var(--accent); text-decoration: none; }
 .home-section { margin-top: var(--s-6); }
 .home-section:first-of-type { margin-top: var(--s-3); }
 .section-head { position: sticky; top: calc(48px + env(safe-area-inset-top)); background: var(--bg); padding: var(--s-3) var(--s-1) var(--s-2); z-index: 5; }
-.deck-row { display: grid; grid-template-columns: 1fr auto; gap: var(--s-3); align-items: center; padding: var(--s-3) var(--s-3); background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-card); margin-bottom: var(--s-2); transition: background var(--d-micro); }
+.deck-row { display: grid; grid-template-columns: 1fr auto; gap: var(--s-3); align-items: center; padding: var(--s-3) var(--s-4); background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-card); margin-bottom: var(--s-2); transition: background var(--d-micro); text-align: left; width: 100%; }
 .deck-row:active { background: var(--surface-2); }
 .deck-row .name { font-weight: 600; font-size: 1rem; color: var(--text); }
 .deck-row .hint { font-size: .8125rem; color: var(--text-2); margin-top: 2px; }
@@ -147,12 +147,12 @@ a { color: var(--accent); text-decoration: none; }
 .deck-row .progress > i { display: block; height: 100%; background: var(--accent); transition: width var(--d-std) var(--ease-std); }
 .deck-row .chev { color: var(--muted); }
 
-.continue-card { display: flex; align-items: center; gap: var(--s-3); padding: var(--s-3) var(--s-4); background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-card); margin-bottom: var(--s-3); }
+.continue-card { display: flex; align-items: center; gap: var(--s-3); padding: var(--s-3) var(--s-4); background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-card); margin-bottom: var(--s-3); text-align: left; width: 100%; }
 .continue-card:active { background: var(--surface-2); }
 .continue-card .label { font-size: .6875rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-2); }
 .continue-card .body { font-weight: 600; margin-top: 2px; }
 
-.review-row { display: flex; align-items: center; gap: var(--s-3); padding: var(--s-3) var(--s-4); border-radius: var(--r-card); background: var(--accent); color: var(--accent-ink); margin-bottom: var(--s-4); font-weight: 600; }
+.review-row { display: flex; align-items: center; gap: var(--s-3); padding: var(--s-3) var(--s-4); border-radius: var(--r-card); background: var(--accent); color: var(--accent-ink); margin-bottom: var(--s-4); font-weight: 600; text-align: left; width: 100%; }
 .review-row .num { font-family: var(--font-mono); font-feature-settings: "tnum" 1; padding: 2px 8px; border-radius: 999px; background: rgba(255,255,255,.18); font-size: .875rem; }
 
 /* ---------- deck screen ---------- */
