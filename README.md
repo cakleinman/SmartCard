@@ -1,0 +1,92 @@
+# Smart Card — Soldierization Study App
+
+A single-file mobile study app built from the Delta Co RSP "Soldierization Smart Card." Flashcards, fill-in-the-blanks, matching, sequencing, timed games, and a Leitner-spaced daily review queue. Works offline. No app store, no server, no account.
+
+The whole app is one file: `index.html`.
+
+## What it covers
+
+14 decks across 4 groups:
+
+- **Creeds & Passages** — Soldier's Creed · General Orders · The Army Song · Battle Buddy Responsibilities · SPOT Report (SALUTE)
+- **Core Lists** — Army Values (LDRSHIP) · Chain of Command · Phonetic Alphabet · Military Numbers · Officer / NCO / Drill Sgt protocol
+- **Drills** — D&C Elements of a Formation · D&C Marching & Manual of Arms · PRT Preparation Drill · PRT Recovery Drill
+- **Reference** — Land Navigation terrain features
+
+## How to use it
+
+### On Android (primary target)
+
+1. Drop `index.html` onto your phone via Drive, email, Signal, Telegram — anything that delivers files.
+2. Open it from the Files app or your downloads folder. Chrome will open it.
+3. Tap the Chrome menu → **Add to Home screen** so progress saves long-term and you get an icon.
+4. Tap the icon to launch like an app.
+
+### On iPhone
+
+1. AirDrop or share `index.html` to the phone. Save it to **Files**.
+2. Open it from Files. It launches in Safari.
+3. Note: iOS does not let `file://` pages be added to the Home Screen. The app still works — re-open it from Files when you want to study. If you want a true Home Screen icon on iOS, host the file on any web URL once and Add to Home Screen from there; from then on it's local.
+
+### Sharing it onward
+
+Send the `index.html` file. That's it. No URL, no QR code. AirDrop, email, Signal, Telegram, Google Drive — all fine.
+
+## Study modes
+
+- **Flashcards (commit-before-reveal)** — for new cards, you type or tap an answer before flipping. Mature cards switch to quick review.
+- **Type from memory** — line-by-line for the Creed, Orders, and Song. Fuzzy graded (Levenshtein ≥ 0.85), so punctuation and case are forgiven.
+- **Cloze fill-in** — passages with words removed; sticky answer bar above the keyboard.
+- **Matching** — two-column tap-tap, six pairs per round.
+- **Tap in order** — for Chain of Command and PRT drills.
+- **Speed round** — 60-second timed bidirectional drill on the Phonetic Alphabet.
+- **Scenario drill** — SALUTE in a real-feeling situation, not in isolation.
+- **Recall in 60s** — list every Battle Buddy responsibility from memory.
+- **Daily Review** — Leitner-spaced (1, 2, 4, 7, 14 days), interleaved across decks. Surfaces only what's due.
+
+## Audio
+
+The app supports two playback paths for the Soldier's Creed and Army Song:
+
+1. **Bundled MP3** (recommended): paste base64-encoded audio into the placeholders at the bottom of `index.html`:
+   - `<script id="audio-creed" type="text/plain">…</script>`
+   - `<script id="audio-song" type="text/plain">…</script>`
+
+   To bundle a recording, download a public-domain MP3 from Internet Archive's [U.S. Army Bands Online](https://archive.org/details/TheArmyGoesRollingAlong) and run:
+   ```sh
+   base64 -w0 song.mp3 > song.b64
+   ```
+   Then paste the contents of `song.b64` between the script tags.
+
+2. **Device TTS** (default): if no bundled audio is present, the Audio mode shows a "Read aloud" button that uses the device's speech synthesis. Free, but it sounds like a robot reading; the Army Song needs to be sung.
+
+The U.S. Army Band's recordings are public domain under 17 U.S.C. § 105.
+
+## Privacy & data
+
+All progress is stored locally in your browser's `localStorage`. Nothing leaves the phone. Reset progress in Settings.
+
+The Contact Info section from the original card was intentionally omitted — names and phone numbers should not travel with the file.
+
+## Editing content
+
+All deck content lives in the `<script id="content" type="application/json">` block near the top of `index.html`. Edit the JSON (mind the commas) and reload.
+
+## Tech notes
+
+- Single HTML file, no dependencies, no build step.
+- Vanilla JS, ~1,200 LOC plus content JSON and CSS.
+- Mobile-first responsive layout, light + dark palettes via `prefers-color-scheme`, manual override in Settings.
+- Works under `file://` on both Android Chrome and iOS Safari.
+- Respects `prefers-reduced-motion`.
+- WCAG AA contrast.
+
+## Verifying after edits
+
+A jsdom smoke test lives at `/tmp/smoke.js` and `/tmp/smoke2.js` (see commit history). To run after edits:
+
+```sh
+cd /tmp && npm i jsdom && node smoke.js && node smoke2.js
+```
+
+22 tests cover route rendering, mode transitions, and persisted state.

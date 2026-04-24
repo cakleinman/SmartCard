@@ -1,0 +1,1949 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Smart Card">
+<meta name="theme-color" content="#F6F5F1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0E100E" media="(prefers-color-scheme: dark)">
+<title>Smart Card — Soldierization Study</title>
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='12' fill='%233B5A3A'/><text x='50%25' y='58%25' font-family='ui-sans-serif,system-ui,sans-serif' font-size='34' font-weight='700' text-anchor='middle' fill='%23F6F5F1'>SC</text></svg>">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAYAAAA9zQYyAAACZ0lEQVR42u3csQ2DUBAFwV+X6YT+G3BgUpA7cICs0zJI28C7IUOsdfOz7a9T+rU18XEYJXA7ghKwja4MbEMrgdq4ysA2qDKoDakMagMqg9pwyqA2mFKojaUMaEMpg9pASqE2jjKgDaMUaqMoA9ogSqE2hoCWJoI2hFKojSCgJaAloCWgBbQEtAS0BLQEtICWgJaAloCWgBbQEtAS0BLQEtACWgJaAloCWgJaQEtAS3nQx+edzi737gI00EADDTTQDgc00A5nF6CBBhpooIEGGmigHQ5ooB3OLkADDTTQQAM9C/RTPqixC9BAC2iggXY4uwDtcHYBGmi7AA20gAYaaIezC9AOZxeggbYL0EALaKCBdji7AO1wdgEaaLsADbSABhpoh7ML0A5nF6CBBhpooIF2OKCBdji7AO2HKkADDTTQQAMNNNBAAw000EADDTTQQAMNNNBAAw000EADDTTQQAMNNLgzQPtoCGiggQYaaKCBFtBAAw000EADDTTQQAMNNNACGmiggQYaaKCBBhpooIEGWkADDTTQQAMNNNBAC2iggQYaaKCBBhpooIEGGmgBDTTQQAMNtB/N2OX/LyDQQAPtcEAD7XB2ARpooIEGGmiggQba4YAG2uHsAjTQQAMNNNBAAw205Gs7CWgJaAEtAS0BLQEtAS2gJaAloCWgJaAFtAS0BLQEtAS0gJaAloCWgJaAFtAS0BLQEtB6OujvYwhlMAMtoKXJoKFWCjPQyoGGWinMQCsHGmqlMEOtHGaglQMNtVKYoVYOM9TKYYZaOcxQK4cZbOUgQ60kZrCVgwy2kpDh1jTEF9dytByW5KvbAAAAAElFTkSuQmCC">
+<style>
+:root {
+  --bg:#F6F5F1; --surface:#FFFFFF; --surface-2:#EFEDE6;
+  --text:#1B1E1A; --text-2:#5C6159; --muted:#A7ABA2; --border:#E2E0D8;
+  --accent:#3B5A3A; --accent-ink:#FFFFFF;
+  --success:#2F7D46; --danger:#B23A2E; --warn:#B5892B;
+
+  --r-chip:6px; --r-btn:10px; --r-card:14px; --r-sheet:20px;
+
+  --s-1:4px; --s-2:8px; --s-3:12px; --s-4:16px; --s-5:20px; --s-6:24px; --s-7:32px; --s-8:40px; --s-9:56px;
+
+  --shadow-1: 0 1px 2px rgba(0,0,0,.05), 0 1px 1px rgba(0,0,0,.04);
+  --shadow-2: 0 6px 20px rgba(0,0,0,.08);
+
+  --ease-micro: cubic-bezier(.4,0,.2,1);
+  --ease-std: cubic-bezier(.2,.8,.2,1);
+  --d-micro: 120ms;
+  --d-std: 240ms;
+  --d-flip: 320ms;
+
+  --font-sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-serif: ui-serif, "New York", "Iowan Old Style", "Charter", Georgia, "Times New Roman", serif;
+  --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:#0E100E; --surface:#161916; --surface-2:#1E221E;
+    --text:#ECEBE4; --text-2:#A7ABA2; --muted:#6A6E66; --border:#262A26;
+    --accent:#B8C88C; --accent-ink:#0E100E;
+    --success:#6BBF7C; --danger:#E07166; --warn:#E3B86A;
+    --shadow-1: 0 0 0 1px rgba(255,255,255,.04) inset;
+    --shadow-2: 0 8px 28px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.04) inset;
+  }
+}
+:root[data-theme="dark"] {
+  --bg:#0E100E; --surface:#161916; --surface-2:#1E221E;
+  --text:#ECEBE4; --text-2:#A7ABA2; --muted:#6A6E66; --border:#262A26;
+  --accent:#B8C88C; --accent-ink:#0E100E;
+  --success:#6BBF7C; --danger:#E07166; --warn:#E3B86A;
+  --shadow-1: 0 0 0 1px rgba(255,255,255,.04) inset;
+  --shadow-2: 0 8px 28px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.04) inset;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin:0; padding:0; height:100%; background:var(--bg); color:var(--text); }
+html { font-size: 100%; }
+body {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overscroll-behavior-y: contain;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+button, input, textarea { font: inherit; color: inherit; }
+button { background: none; border: 0; cursor: pointer; padding: 0; }
+a { color: var(--accent); text-decoration: none; }
+
+/* ---------- typography ---------- */
+.t-display { font-size: 2.25rem; line-height: 1.15; font-weight: 600; letter-spacing: -0.01em; }
+.t-h1 { font-size: 1.5rem; line-height: 1.25; font-weight: 600; letter-spacing: -0.005em; }
+.t-h2 { font-size: 1.125rem; line-height: 1.3; font-weight: 600; }
+.t-body { font-size: 1rem; line-height: 1.5; }
+.t-passage { font-family: var(--font-serif); font-size: 1.0625rem; line-height: 1.6; }
+.t-caption { font-size: .8125rem; line-height: 1.35; font-weight: 500; color: var(--text-2); }
+.t-micro { font-size: .6875rem; line-height: 1.2; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-2); font-feature-settings: "tnum" 1; }
+.t-mono { font-family: var(--font-mono); font-feature-settings: "tnum" 1; }
+.muted { color: var(--text-2); }
+
+/* ---------- layout shell ---------- */
+#app { min-height: 100dvh; display: flex; flex-direction: column; }
+.topbar {
+  position: sticky; top: 0; z-index: 10;
+  display: grid; grid-template-columns: 44px 1fr 44px;
+  align-items: center;
+  height: calc(48px + env(safe-area-inset-top));
+  padding-top: env(safe-area-inset-top);
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: saturate(140%) blur(12px);
+  -webkit-backdrop-filter: saturate(140%) blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+.topbar .title { text-align: center; font-weight: 600; font-size: 1rem; letter-spacing: -0.005em; }
+.topbar button { width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; color: var(--text); border-radius: 10px; }
+.topbar button:active { background: var(--surface-2); }
+.topbar .wordmark { font-size: .75rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-2); }
+
+.screen { flex: 1; padding: var(--s-4); padding-bottom: calc(var(--s-9) + env(safe-area-inset-bottom)); }
+.screen-narrow { max-width: 540px; margin: 0 auto; width: 100%; }
+
+/* ---------- buttons ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--s-2);
+  min-height: 48px; padding: 0 var(--s-5);
+  border-radius: var(--r-btn);
+  font-weight: 600; font-size: 1rem;
+  background: var(--surface); color: var(--text);
+  border: 1px solid var(--border);
+  transition: transform var(--d-micro) var(--ease-micro), background var(--d-micro);
+}
+.btn:active { transform: scale(.985); background: var(--surface-2); }
+.btn-primary { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+.btn-primary:active { background: color-mix(in srgb, var(--accent) 88%, black); }
+.btn-ghost { background: transparent; border-color: transparent; }
+.btn-block { width: 100%; }
+
+/* ---------- card ---------- */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow-1);
+}
+.card-pad { padding: var(--s-4); }
+
+/* ---------- focus ---------- */
+:focus { outline: none; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 8px; }
+
+/* ---------- icon ---------- */
+.icon { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+.icon-sm { width: 18px; height: 18px; }
+
+/* ---------- home: deck list ---------- */
+.home-section { margin-top: var(--s-6); }
+.home-section:first-of-type { margin-top: var(--s-3); }
+.section-head { position: sticky; top: calc(48px + env(safe-area-inset-top)); background: var(--bg); padding: var(--s-3) var(--s-1) var(--s-2); z-index: 5; }
+.deck-row { display: grid; grid-template-columns: 1fr auto; gap: var(--s-3); align-items: center; padding: var(--s-3) var(--s-3); background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-card); margin-bottom: var(--s-2); transition: background var(--d-micro); }
+.deck-row:active { background: var(--surface-2); }
+.deck-row .name { font-weight: 600; font-size: 1rem; color: var(--text); }
+.deck-row .hint { font-size: .8125rem; color: var(--text-2); margin-top: 2px; }
+.deck-row .progress { height: 2px; width: 100%; background: var(--surface-2); border-radius: 2px; margin-top: 8px; overflow: hidden; }
+.deck-row .progress > i { display: block; height: 100%; background: var(--accent); transition: width var(--d-std) var(--ease-std); }
+.deck-row .chev { color: var(--muted); }
+
+.continue-card { display: flex; align-items: center; gap: var(--s-3); padding: var(--s-3) var(--s-4); background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-card); margin-bottom: var(--s-3); }
+.continue-card:active { background: var(--surface-2); }
+.continue-card .label { font-size: .6875rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-2); }
+.continue-card .body { font-weight: 600; margin-top: 2px; }
+
+.review-row { display: flex; align-items: center; gap: var(--s-3); padding: var(--s-3) var(--s-4); border-radius: var(--r-card); background: var(--accent); color: var(--accent-ink); margin-bottom: var(--s-4); font-weight: 600; }
+.review-row .num { font-family: var(--font-mono); font-feature-settings: "tnum" 1; padding: 2px 8px; border-radius: 999px; background: rgba(255,255,255,.18); font-size: .875rem; }
+
+/* ---------- deck screen ---------- */
+.deck-hero { padding: var(--s-3) 0 var(--s-5); display: flex; align-items: flex-start; gap: var(--s-4); }
+.ring { --pct: 0; width: 64px; height: 64px; flex: 0 0 64px; }
+.ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.ring .track { stroke: var(--surface-2); }
+.ring .bar { stroke: var(--accent); stroke-dasharray: var(--circ); stroke-dashoffset: calc(var(--circ) * (1 - var(--pct))); transition: stroke-dashoffset var(--d-std) var(--ease-std); }
+.ring text { fill: var(--text); font-family: var(--font-mono); font-feature-settings: "tnum" 1; font-size: 18px; font-weight: 600; transform: rotate(90deg); transform-origin: 50% 50%; }
+.deck-hero .info { flex: 1; min-width: 0; }
+.deck-hero .preview { color: var(--text-2); font-size: .9375rem; line-height: 1.4; margin-top: var(--s-2); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* segmented control */
+.segmented { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; padding: 4px; background: var(--surface-2); border-radius: var(--r-btn); margin: var(--s-4) 0; }
+.segmented button { padding: 10px 12px; border-radius: 8px; font-weight: 600; font-size: .875rem; color: var(--text-2); transition: background var(--d-micro), color var(--d-micro); }
+.segmented button[aria-selected="true"] { background: var(--surface); color: var(--text); box-shadow: var(--shadow-1); }
+.deck-actions { display: flex; flex-direction: column; gap: var(--s-2); margin-top: var(--s-5); }
+
+/* ---------- flashcard ---------- */
+.fc-wrap { padding: var(--s-3) 0; display: flex; flex-direction: column; align-items: center; }
+.fc-meta { width: 100%; display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--s-3); }
+.fc-progress { flex: 1; height: 2px; background: var(--surface-2); border-radius: 2px; margin: 0 var(--s-3); overflow: hidden; }
+.fc-progress > i { display: block; height: 100%; background: var(--accent); transition: width var(--d-std) var(--ease-std); }
+.fc-card-area { width: 88vw; max-width: 480px; min-height: 60vh; perspective: 1200px; margin: 0 auto; }
+.fc-card { position: relative; width: 100%; height: 100%; min-height: 60vh; transform-style: preserve-3d; transition: transform var(--d-flip) var(--ease-std); }
+.fc-card.is-flipped { transform: rotateY(180deg); }
+.fc-face { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: var(--s-6); border-radius: var(--r-card); background: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow-2); backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.fc-face.back { transform: rotateY(180deg); }
+.fc-prompt { font-size: 1.0625rem; color: var(--text-2); font-weight: 500; }
+.fc-term { font-size: 2.25rem; font-weight: 600; line-height: 1.15; text-align: center; margin-top: var(--s-3); }
+.fc-term.mono { font-family: var(--font-mono); font-feature-settings: "tnum" 1; letter-spacing: 0.02em; }
+.fc-def { font-size: 1.125rem; line-height: 1.4; text-align: center; margin-top: var(--s-3); max-width: 36ch; }
+.fc-speak { position: absolute; top: var(--s-3); right: var(--s-3); width: 40px; height: 40px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; color: var(--text-2); }
+.fc-speak:active { background: var(--surface-2); }
+.fc-rate { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s-2); width: 88vw; max-width: 480px; margin: var(--s-4) auto 0; }
+.fc-rate button { height: 52px; border-radius: var(--r-btn); border: 1px solid var(--border); background: var(--surface); font-weight: 600; }
+.fc-rate button.again { color: var(--danger); }
+.fc-rate button.good { color: var(--text); }
+.fc-rate button.easy { color: var(--accent); }
+.fc-commit { display: flex; gap: var(--s-2); width: 88vw; max-width: 480px; margin: var(--s-4) auto 0; }
+.fc-commit input { flex: 1; height: 52px; padding: 0 var(--s-4); border-radius: var(--r-btn); border: 1px solid var(--border); background: var(--surface); }
+.fc-commit input:focus { border-color: var(--accent); }
+
+/* ---------- cloze fill-in ---------- */
+.cloze-wrap { padding-bottom: 96px; }
+.cloze-passage { padding: var(--s-4); border-radius: var(--r-card); background: var(--surface); border: 1px solid var(--border); }
+.cloze-blank { display: inline-block; min-width: 6ch; border: 0; border-bottom: 1px solid var(--text-2); padding: 0 4px; background: transparent; font: inherit; color: var(--text); text-align: center; }
+.cloze-blank:focus { border-bottom-color: var(--accent); }
+.cloze-blank.is-correct { border-bottom: 1px solid var(--success); color: var(--text); }
+.cloze-blank.is-wrong { border-bottom: 1px solid var(--danger); }
+.cloze-blank.is-revealed { color: var(--text-2); border-bottom-color: var(--text-2); font-style: italic; }
+.cloze-bar { position: fixed; left: 0; right: 0; bottom: 0; padding: var(--s-3) var(--s-4) calc(var(--s-3) + env(safe-area-inset-bottom)); display: flex; gap: var(--s-2); align-items: center; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-top: 1px solid var(--border); }
+.cloze-bar .hint { font-size: .8125rem; color: var(--text-2); flex: 0 0 auto; }
+.cloze-bar input { flex: 1; min-width: 0; height: 44px; padding: 0 var(--s-3); border-radius: var(--r-btn); border: 1px solid var(--border); background: var(--surface); }
+.cloze-bar input:focus { border-color: var(--accent); }
+.cloze-bar .small { padding: 0 var(--s-3); height: 44px; min-height: 0; font-size: .875rem; }
+
+/* ---------- type-from-memory ---------- */
+.tfm-wrap { padding-bottom: 96px; }
+.tfm-passage { padding: var(--s-4); border-radius: var(--r-card); background: var(--surface); border: 1px solid var(--border); }
+.tfm-line { padding: 6px 0; border-bottom: 1px solid var(--border); color: var(--text-2); }
+.tfm-line:last-child { border-bottom: 0; }
+.tfm-line.current { color: var(--text); font-weight: 600; }
+.tfm-line.done { color: var(--text-2); }
+.tfm-line.miss { background: color-mix(in srgb, var(--danger) 8%, transparent); border-radius: 6px; padding: 6px 8px; }
+.tfm-line .hint { color: var(--text-2); font-style: italic; }
+
+/* ---------- matching ---------- */
+.match-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-2); padding: var(--s-2) 0; }
+.match-tile { padding: 12px 14px; min-height: 56px; display: flex; align-items: center; border-radius: var(--r-btn); background: var(--surface); border: 1px solid var(--border); font-size: .9375rem; line-height: 1.25; transition: transform var(--d-micro), background var(--d-micro), border-color var(--d-micro); text-align: left; cursor: pointer; }
+.match-grid > .match-tile:nth-child(2n) { text-align: right; justify-content: flex-end; }
+.match-tile.sel { border-color: var(--accent); background: var(--surface-2); border-width: 2px; }
+.match-tile.match { background: var(--surface-2); color: var(--text-2); border-color: var(--border); transform: scale(.96); pointer-events: none; }
+.match-tile.miss { animation: pulse-miss .18s var(--ease-std); }
+@keyframes pulse-miss { 0%,100% { border-color: var(--border); } 50% { border-color: var(--danger); } }
+
+/* ---------- sequencer ---------- */
+.seq-placed { display: flex; flex-direction: column; gap: var(--s-2); margin-bottom: var(--s-3); min-height: 16px; }
+.seq-pool { display: flex; flex-wrap: wrap; gap: var(--s-2); }
+.seq-tile { padding: 12px 14px; border-radius: var(--r-btn); background: var(--surface); border: 1px solid var(--border); font-size: .9375rem; min-height: 44px; }
+.seq-tile.placed { background: var(--surface-2); color: var(--text-2); }
+.seq-tile.placed .num { display: inline-block; min-width: 22px; color: var(--text-2); font-family: var(--font-mono); font-feature-settings: "tnum" 1; }
+.seq-tile.miss { animation: nudge .14s var(--ease-std); border-color: var(--danger); }
+@keyframes nudge { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+
+/* ---------- phonetic speed ---------- */
+.speed-wrap { display: flex; flex-direction: column; align-items: stretch; gap: var(--s-4); padding: var(--s-3) 0; }
+.speed-timer { height: 4px; background: var(--surface-2); border-radius: 2px; overflow: hidden; }
+.speed-timer > i { display: block; height: 100%; background: var(--accent); transition: width 1s linear; }
+.speed-meta { display: flex; justify-content: space-between; align-items: baseline; }
+.speed-prompt { font-family: var(--font-mono); font-feature-settings: "tnum" 1; font-size: 5rem; font-weight: 600; text-align: center; padding: var(--s-6) 0; line-height: 1; }
+.speed-options { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-2); }
+@media (orientation: landscape) and (max-height: 500px) { .speed-options { grid-template-columns: 1fr; } .speed-prompt { font-size: 3rem; padding: var(--s-3) 0; } }
+.speed-options button { min-height: 64px; border-radius: var(--r-btn); border: 1px solid var(--border); background: var(--surface); font-weight: 600; }
+.speed-options button.right { border-color: var(--success); color: var(--success); }
+.speed-options button.wrong { border-color: var(--danger); color: var(--danger); }
+
+/* ---------- score ---------- */
+.score-screen { display: flex; flex-direction: column; align-items: center; padding: var(--s-7) var(--s-4); gap: var(--s-3); }
+.score-screen .num { font-family: var(--font-mono); font-feature-settings: "tnum" 1; font-size: 5rem; font-weight: 600; line-height: 1; }
+.score-screen .meta { color: var(--text-2); }
+.score-bar { display: flex; width: 100%; height: 8px; border-radius: 4px; overflow: hidden; background: var(--surface-2); margin: var(--s-3) 0; }
+.score-bar i { display: block; height: 100%; }
+.score-bar .ok { background: var(--success); }
+.score-bar .no { background: var(--danger); }
+
+/* ---------- settings sheet ---------- */
+.sheet-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.36); z-index: 50; opacity: 0; transition: opacity var(--d-std); }
+.sheet-backdrop.open { opacity: 1; }
+.sheet { position: fixed; left: 0; right: 0; bottom: 0; z-index: 51; background: var(--surface); border-top-left-radius: var(--r-sheet); border-top-right-radius: var(--r-sheet); padding: var(--s-5) var(--s-4) calc(var(--s-5) + env(safe-area-inset-bottom)); transform: translateY(100%); transition: transform var(--d-std) var(--ease-std); box-shadow: 0 -10px 40px rgba(0,0,0,.18); }
+.sheet.open { transform: translateY(0); }
+.sheet-grab { width: 36px; height: 4px; border-radius: 4px; background: var(--muted); margin: 0 auto var(--s-3); opacity: .6; }
+.setting-row { display: flex; align-items: center; justify-content: space-between; gap: var(--s-3); padding: var(--s-3) 0; border-bottom: 1px solid var(--border); }
+.setting-row:last-child { border-bottom: 0; }
+.setting-row .label { font-weight: 500; }
+.setting-row .desc { color: var(--text-2); font-size: .8125rem; margin-top: 2px; }
+.toggle { position: relative; width: 44px; height: 26px; background: var(--surface-2); border-radius: 999px; transition: background var(--d-micro); }
+.toggle::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; background: var(--surface); border-radius: 999px; box-shadow: var(--shadow-1); transition: transform var(--d-micro) var(--ease-micro); }
+.toggle.on { background: var(--accent); }
+.toggle.on::after { transform: translateX(18px); background: var(--accent-ink); }
+.seg-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; background: var(--surface-2); border-radius: var(--r-btn); }
+.seg-3 button { padding: 8px; border-radius: 6px; font-size: .8125rem; font-weight: 600; color: var(--text-2); }
+.seg-3 button[aria-selected="true"] { background: var(--surface); color: var(--text); box-shadow: var(--shadow-1); }
+
+/* ---------- toast / banner ---------- */
+.banner { padding: var(--s-3) var(--s-4); border-radius: var(--r-card); background: var(--surface-2); color: var(--text); font-size: .875rem; line-height: 1.4; margin-bottom: var(--s-3); border: 1px solid var(--border); }
+.banner .x { float: right; opacity: .6; }
+.empty { padding: var(--s-7) var(--s-4); text-align: center; color: var(--text-2); }
+.row-gap { display: flex; flex-direction: column; gap: var(--s-2); }
+.center { text-align: center; }
+
+/* reduce motion */
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+  .fc-card { transition: opacity 150ms ease; transform: none !important; }
+  .fc-card.is-flipped .fc-face.front { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <header class="topbar" id="topbar">
+    <button id="topbar-left" aria-label="Back" hidden></button>
+    <div class="title" id="topbar-title"><span class="wordmark">Smart Card</span></div>
+    <button id="topbar-right" aria-label="Settings"></button>
+  </header>
+  <main id="screen" class="screen"></main>
+</div>
+
+<script id="content" type="application/json">
+{
+  "version": "1.0",
+  "verified": "Delta Co RSP Soldierization Smart Card",
+  "groups": [
+    { "id": "creeds", "title": "Creeds & Passages", "decks": ["creed", "orders", "song", "buddy", "salute"] },
+    { "id": "lists",  "title": "Core Lists",        "decks": ["values", "chain", "phonetic", "numbers", "protocol"] },
+    { "id": "drills", "title": "Drills",            "decks": ["dc-form", "dc-march", "prt-prep", "prt-rec"] },
+    { "id": "ref",    "title": "Reference",         "decks": ["land-nav"] }
+  ],
+  "decks": {
+    "creed": {
+      "title": "Soldier's Creed",
+      "hint": "9-line creed, recited verbatim",
+      "type": "passage",
+      "modes": ["tfm", "cloze", "audio"],
+      "audio": "creed",
+      "lines": [
+        "I am an American Soldier.",
+        "I am a Warrior and a member of a team.",
+        "I serve the people of the United States and live the Army Values.",
+        "I will always place the mission first.",
+        "I will never accept defeat.",
+        "I will never quit.",
+        "I will never leave a fallen comrade.",
+        "I am disciplined, physically and mentally tough, trained and proficient in my warrior tasks and drills.",
+        "I always maintain my arms, my equipment and myself.",
+        "I am an expert and I am a professional.",
+        "I stand ready to deploy, engage, and destroy the enemies of the United States of America in close combat.",
+        "I am a guardian of freedom and the American way of life.",
+        "I am an American Soldier."
+      ]
+    },
+    "orders": {
+      "title": "General Orders",
+      "hint": "The three General Orders",
+      "type": "passage",
+      "modes": ["tfm", "cloze", "flash"],
+      "items": [
+        { "id": "go-1", "front": "1st General Order", "back": "I will guard everything within the limits of my post and quit my post only when properly relieved." },
+        { "id": "go-2", "front": "2nd General Order", "back": "I will obey my special orders and perform all my duties in a military manner." },
+        { "id": "go-3", "front": "3rd General Order", "back": "I will report violations of my special orders, emergencies, and anything not covered in my instructions, to the commander of the relief." }
+      ]
+    },
+    "song": {
+      "title": "The Army Song",
+      "hint": "The Army Goes Rolling Along",
+      "type": "passage",
+      "modes": ["tfm", "cloze", "audio"],
+      "audio": "song",
+      "verses": [
+        { "label": "Intro", "lines": [
+          "March along, sing our song, with the Army of the free.",
+          "Count the brave, count the true, who have fought to victory.",
+          "We're the Army and proud of our name.",
+          "We're the Army and proudly proclaim:"
+        ]},
+        { "label": "Verse", "lines": [
+          "First to fight for the right,",
+          "And to build the Nation's might,",
+          "And The Army Goes Rolling Along.",
+          "Proud of all we have done,",
+          "Fighting till the battle's won,",
+          "And the Army Goes Rolling Along."
+        ]},
+        { "label": "Refrain", "lines": [
+          "Then it's Hi! Hi! Hey!",
+          "The Army's on its way.",
+          "Count off the cadence loud and strong.",
+          "For where e'er we go,",
+          "You will always know",
+          "That The Army Goes Rolling Along."
+        ]}
+      ]
+    },
+    "buddy": {
+      "title": "Battle Buddy Responsibilities",
+      "hint": "8 responsibilities",
+      "type": "bullets",
+      "modes": ["flash", "recall60"],
+      "items": [
+        { "id": "bb-1", "front": "Presence",        "back": "Never leaving your buddy alone." },
+        { "id": "bb-2", "front": "Safety",          "back": "Keep your buddy safe and free from harm." },
+        { "id": "bb-3", "front": "Whereabouts",     "back": "Know the whereabouts of your buddy at all times." },
+        { "id": "bb-4", "front": "Communication",   "back": "Pass on information to your buddy." },
+        { "id": "bb-5", "front": "Encouragement",   "back": "Encourage your buddy to train harder and do better." },
+        { "id": "bb-6", "front": "Problem-solving", "back": "Help your buddy solve problems." },
+        { "id": "bb-7", "front": "Army Values",     "back": "Assist your buddy in living Army Values." },
+        { "id": "bb-8", "front": "Reporting",       "back": "Inform Cadre of any changes in your buddy's behavior." }
+      ]
+    },
+    "salute": {
+      "title": "SPOT Report (SALUTE)",
+      "hint": "S A L U T E — what to report",
+      "type": "acronym",
+      "modes": ["flash", "match", "scenario"],
+      "items": [
+        { "id": "sa-S", "front": "S", "back": "Size" },
+        { "id": "sa-A", "front": "A", "back": "Activity" },
+        { "id": "sa-L", "front": "L", "back": "Location" },
+        { "id": "sa-U", "front": "U", "back": "Unit / Uniform" },
+        { "id": "sa-T", "front": "T", "back": "Time" },
+        { "id": "sa-E", "front": "E", "back": "Equipment" }
+      ],
+      "scenarios": [
+        {
+          "text": "0615 hours. From your OP at grid NK 274 891 you observe four enemy soldiers in woodland uniform digging in along a treeline 300 meters north. They are emplacing a tripod-mounted machine gun.",
+          "answers": { "S": "4 soldiers", "A": "Emplacing a machine gun / digging in", "L": "Grid NK 274 891 / treeline 300m north", "U": "Woodland uniform (enemy)", "T": "0615", "E": "Tripod-mounted machine gun" }
+        },
+        {
+          "text": "1430 hours. A column of 6 BMPs is moving south along Route Blue, vicinity grid PB 552 014, at moderate speed. Crews wear desert pattern.",
+          "answers": { "S": "6 BMPs", "A": "Moving south at moderate speed", "L": "Route Blue, grid PB 552 014", "U": "Desert pattern crews", "T": "1430", "E": "BMPs" }
+        }
+      ]
+    },
+    "values": {
+      "title": "Army Values (LDRSHIP)",
+      "hint": "L D R S H I P — values + definitions",
+      "type": "pair",
+      "modes": ["flash", "match", "cloze"],
+      "items": [
+        { "id": "v-L", "front": "Loyalty",          "back": "Bear true faith and allegiance to the U.S. Constitution, the Army, and other Soldiers." },
+        { "id": "v-D", "front": "Duty",             "back": "Fulfill your obligations." },
+        { "id": "v-R", "front": "Respect",          "back": "Treat people as they should be treated." },
+        { "id": "v-S", "front": "Selfless Service", "back": "Put the welfare of the Nation, the Army and your subordinates before your own." },
+        { "id": "v-H", "front": "Honor",            "back": "Live up to all the Army Values." },
+        { "id": "v-I", "front": "Integrity",        "back": "Do what's right, legally and morally." },
+        { "id": "v-P", "front": "Personal Courage", "back": "Face fear, danger, or adversity (physical and moral)." }
+      ]
+    },
+    "chain": {
+      "title": "Chain of Command",
+      "hint": "13 ranks, President to Squad (Guard variant)",
+      "type": "ordered",
+      "modes": ["sequence", "flash"],
+      "items": [
+        "President of the United States",
+        "National Guard",
+        "Secretary of Defense",
+        "Secretary of the Army",
+        "Army Chief of Staff",
+        "Field Army",
+        "Corps",
+        "National Guard Adjutant General",
+        "Division",
+        "Brigade",
+        "Battalion",
+        "Company",
+        "Platoon",
+        "Squad"
+      ]
+    },
+    "phonetic": {
+      "title": "Phonetic Alphabet",
+      "hint": "26 letters, NATO standard",
+      "type": "pair",
+      "modes": ["flash", "match", "speed"],
+      "items": [
+        { "id": "p-A", "front": "A", "back": "Alpha" }, { "id": "p-B", "front": "B", "back": "Bravo" },
+        { "id": "p-C", "front": "C", "back": "Charlie" }, { "id": "p-D", "front": "D", "back": "Delta" },
+        { "id": "p-E", "front": "E", "back": "Echo" }, { "id": "p-F", "front": "F", "back": "Foxtrot" },
+        { "id": "p-G", "front": "G", "back": "Golf" }, { "id": "p-H", "front": "H", "back": "Hotel" },
+        { "id": "p-I", "front": "I", "back": "India" }, { "id": "p-J", "front": "J", "back": "Juliet" },
+        { "id": "p-K", "front": "K", "back": "Kilo" }, { "id": "p-L", "front": "L", "back": "Lima" },
+        { "id": "p-M", "front": "M", "back": "Mike" }, { "id": "p-N", "front": "N", "back": "November" },
+        { "id": "p-O", "front": "O", "back": "Oscar" }, { "id": "p-P", "front": "P", "back": "Papa" },
+        { "id": "p-Q", "front": "Q", "back": "Quebec" }, { "id": "p-R", "front": "R", "back": "Romeo" },
+        { "id": "p-S", "front": "S", "back": "Sierra" }, { "id": "p-T", "front": "T", "back": "Tango" },
+        { "id": "p-U", "front": "U", "back": "Uniform" }, { "id": "p-V", "front": "V", "back": "Victor" },
+        { "id": "p-W", "front": "W", "back": "Whiskey" }, { "id": "p-X", "front": "X", "back": "X-ray" },
+        { "id": "p-Y", "front": "Y", "back": "Yankee" }, { "id": "p-Z", "front": "Z", "back": "Zulu" }
+      ]
+    },
+    "numbers": {
+      "title": "Military Numbers",
+      "hint": "0–9, military pronunciation",
+      "type": "pair",
+      "modes": ["flash", "match"],
+      "items": [
+        { "id": "n-0", "front": "0", "back": "Ze-Ro" }, { "id": "n-1", "front": "1", "back": "Wun" },
+        { "id": "n-2", "front": "2", "back": "Too" }, { "id": "n-3", "front": "3", "back": "Tree" },
+        { "id": "n-4", "front": "4", "back": "Fow-Er" }, { "id": "n-5", "front": "5", "back": "Fife" },
+        { "id": "n-6", "front": "6", "back": "Six" }, { "id": "n-7", "front": "7", "back": "Sev-En" },
+        { "id": "n-8", "front": "8", "back": "Ait" }, { "id": "n-9", "front": "9", "back": "Niner" }
+      ]
+    },
+    "protocol": {
+      "title": "Officer / NCO / Drill Sgt Protocol",
+      "hint": "Who calls what, who does what",
+      "type": "pair",
+      "modes": ["flash", "match"],
+      "items": [
+        { "id": "pr-O", "front": "Officers approach",          "back": "Sound off \"Attention\" — stand at Attention, Salute." },
+        { "id": "pr-N", "front": "NCOs approach",              "back": "Sound off \"At Ease\" — stand at Parade Rest." },
+        { "id": "pr-D", "front": "Drill Sergeants (Hat & Badge)", "back": "Drill Sergeants are E5, E6, or E7. E7 is usually a Senior Drill Sergeant." }
+      ]
+    },
+    "dc-form": {
+      "title": "D&C — Elements of a Formation",
+      "hint": "Formation vocabulary",
+      "type": "pair",
+      "modes": ["flash", "match"],
+      "items": [
+        { "id": "f-align",  "front": "Alignment", "back": "Dress (line) and cover (column) of personnel in a formation." },
+        { "id": "f-dist",   "front": "Distance",  "back": "Space between elements in column, measured front to rear." },
+        { "id": "f-cover",  "front": "Cover",     "back": "Personnel aligned directly behind the person to their front." },
+        { "id": "f-int",    "front": "Interval",  "back": "Lateral space between personnel — normal, close, or double-arm." },
+        { "id": "f-squad",  "front": "Squad / File", "back": "A column of personnel, one behind the other." },
+        { "id": "f-rank",   "front": "Rank",      "back": "A line of personnel side-by-side." },
+        { "id": "f-head",   "front": "Head",      "back": "The lead element of a formation." },
+        { "id": "f-base",   "front": "Base",      "back": "The element on which a movement or alignment is regulated." },
+        { "id": "f-post",   "front": "Post",      "back": "The correct place for an officer or NCO in a formation." },
+        { "id": "f-fallin", "front": "Fall In",   "back": "Form the unit at attention in the prescribed formation." },
+        { "id": "f-att",    "front": "Position of Attention", "back": "Heels together, feet at 45°, body erect, arms straight, fingers curled." },
+        { "id": "f-salute", "front": "Hand Salute", "back": "Raise the right hand smartly to the headgear or brow." },
+        { "id": "f-rest",   "front": "Parade Rest / Stand at Ease / At Ease / Rest", "back": "Progressive rest commands — Parade Rest most rigid, Rest most relaxed (silence not required)." },
+        { "id": "f-face",   "front": "Right / Left / About Face", "back": "Pivot 90° right, 90° left, or 180° to the rear." },
+        { "id": "f-count",  "front": "Count Off", "back": "Each soldier in turn calls out their number." },
+        { "id": "f-dress",  "front": "Dress Right Dress / Ready Front", "back": "Establish lateral alignment and interval, then return to attention." },
+        { "id": "f-recov",  "front": "Cover / Recover", "back": "Establish or re-establish alignment behind the person to your front." },
+        { "id": "f-ranks",  "front": "Open Ranks / Close Ranks", "back": "Increase or decrease the distance between ranks for inspection." },
+        { "id": "f-extend", "front": "Extend / Assemble", "back": "Spread the formation out / bring the formation back together." },
+        { "id": "f-report", "front": "Receive the Report / Report", "back": "Subordinate leaders report status of their unit to the commander." },
+        { "id": "f-fallout", "front": "Fall Out / Dismissed", "back": "Leave the formation; Dismissed ends the formation." }
+      ]
+    },
+    "dc-march": {
+      "title": "D&C — Marching & Manual of Arms",
+      "hint": "Marching commands and weapon positions",
+      "type": "pair",
+      "modes": ["flash", "match"],
+      "items": [
+        { "id": "m-fwd",   "front": "Forward, March",       "back": "Begin marching from the halt at the cadence of quick time, 30-inch step." },
+        { "id": "m-rs",    "front": "Right Step / Left Step", "back": "Sidestep right or left, 12-inch step, from the halt." },
+        { "id": "m-bw",    "front": "Backwards, March",      "back": "March to the rear, 15-inch step, from the halt." },
+        { "id": "m-cr",    "front": "Column Right / Column Left", "back": "Change direction of march 90° to the right or left." },
+        { "id": "m-chr",   "front": "Column Half Right / Half Left", "back": "Change direction of march 45°." },
+        { "id": "m-flank", "front": "Right Flank / Left Flank", "back": "Individuals turn 90° while marching, maintaining the formation." },
+        { "id": "m-cc",    "front": "Counter Column",        "back": "March the column to the rear by reversing direction in place." },
+        { "id": "m-rear",  "front": "Rear, March",           "back": "Each soldier executes about face while marching." },
+        { "id": "m-half",  "front": "Half Step",             "back": "March at 15-inch step, quick time cadence." },
+        { "id": "m-mark",  "front": "Mark Time",             "back": "March in place." },
+        { "id": "m-dt",    "front": "Double Time / Quick Time", "back": "Double Time = 180 steps/min, 30-inch step. Quick Time = 120 steps/min." },
+        { "id": "m-halt",  "front": "Halt",                  "back": "Stop marching and assume the position of attention." },
+        { "id": "ma-ord",  "front": "Order Arms",            "back": "Weapon at the right side, butt grounded near the right foot." },
+        { "id": "ma-port", "front": "Port Arms",             "back": "Weapon held diagonally across the body." },
+        { "id": "ma-pres", "front": "Present Arms",          "back": "Render honors with the weapon (rifle salute)." },
+        { "id": "ma-shld", "front": "Right / Left Shoulder Arms", "back": "Weapon carried on the right or left shoulder." },
+        { "id": "ma-sling","front": "Adjust Slings",         "back": "Adjust the weapon's sling for carrying." },
+        { "id": "ma-sl",   "front": "Sling Arms / Un-sling Arms", "back": "Place the weapon on the shoulder by its sling, or remove it." },
+        { "id": "ma-stk",  "front": "Stack Arms / Take Arms", "back": "Form or break a stack of weapons in the formation." },
+        { "id": "ma-insp", "front": "Inspection Arms",       "back": "Open the weapon for visual inspection of the chamber." }
+      ]
+    },
+    "prt-prep": {
+      "title": "PRT — Preparation Drill",
+      "hint": "10 exercises, in order",
+      "type": "ordered",
+      "modes": ["sequence", "flash"],
+      "items": [
+        "Bend and Reach",
+        "Rear Lunge",
+        "High Jumper",
+        "Rower",
+        "Squat Bender",
+        "Windmill",
+        "Forward Lunge",
+        "Prone Row",
+        "Bent-Leg Body Twist",
+        "Push-up"
+      ]
+    },
+    "prt-rec": {
+      "title": "PRT — Recovery Drill",
+      "hint": "5 stretches, in order",
+      "type": "ordered",
+      "modes": ["sequence", "flash"],
+      "items": [
+        "Overhead Arm Pull",
+        "Rear Lunge",
+        "Extend and Flex",
+        "Thigh Stretch",
+        "Single-Leg Over"
+      ]
+    },
+    "land-nav": {
+      "title": "Land Navigation — Terrain Features",
+      "hint": "Reference only — see FM 3-25.26",
+      "type": "reference",
+      "modes": ["read"],
+      "body": "5 major terrain features (hill, ridge, valley, saddle, depression), 3 minor (draw, spur, cliff), and 2 supplementary (cut, fill). The Smart Card lists this section as a header only — see FM 3-25.26 for full descriptions and contour-map identification."
+    }
+  }
+}
+</script>
+<script id="audio-song" type="text/plain"></script>
+<script id="audio-creed" type="text/plain"></script>
+
+<script>
+"use strict";
+
+// ============================================================
+// Smart Card — single-file study app
+// ============================================================
+
+const CONTENT = JSON.parse(document.getElementById('content').textContent);
+const STORAGE_KEY = 'smartcard.v1';
+const SETTINGS_KEY = 'smartcard.settings.v1';
+
+// ---------- icons (inline SVG) ----------
+const ICON = {
+  back:    '<svg class="icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>',
+  home:    '<svg class="icon" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>',
+  settings:'<svg class="icon" viewBox="0 0 24 24"><line x1="4" y1="6" x2="14" y2="6"/><circle cx="17" cy="6" r="2.5"/><line x1="20" y1="12" x2="10" y2="12"/><circle cx="7" cy="12" r="2.5"/><line x1="4" y1="18" x2="14" y2="18"/><circle cx="17" cy="18" r="2.5"/></svg>',
+  chev:    '<svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg>',
+  speaker: '<svg class="icon icon-sm" viewBox="0 0 24 24"><polygon points="11 5 6 9 3 9 3 15 6 15 11 19 11 5"/><path d="M15.5 8.5a4 4 0 0 1 0 7"/></svg>',
+  shuffle: '<svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>',
+  retry:   '<svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.5 15a9 9 0 1 0 2.1-9.4L1 10"/></svg>',
+  x:       '<svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+  check:   '<svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>',
+  timer:   '<svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><polyline points="12 9 12 13 15 15"/><line x1="9" y1="2" x2="15" y2="2"/></svg>'
+};
+
+// ---------- utils ----------
+const $ = (sel, root=document) => root.querySelector(sel);
+const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+const h = (tag, attrs={}, ...kids) => {
+  const el = document.createElement(tag);
+  for (const [k,v] of Object.entries(attrs)) {
+    if (v == null || v === false) continue;
+    if (k === 'class') el.className = v;
+    else if (k === 'html') el.innerHTML = v;
+    else if (k === 'text') el.textContent = v;
+    else if (k.startsWith('on')) el.addEventListener(k.slice(2).toLowerCase(), v);
+    else if (k === 'data') for (const [dk,dv] of Object.entries(v)) el.dataset[dk] = dv;
+    else if (v === true) el.setAttribute(k, '');
+    else el.setAttribute(k, v);
+  }
+  for (const kid of kids.flat()) {
+    if (kid == null || kid === false) continue;
+    el.appendChild(kid instanceof Node ? kid : document.createTextNode(String(kid)));
+  }
+  return el;
+};
+const shuffle = (a) => { a = a.slice(); for (let i=a.length-1; i>0; i--) { const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]] = [a[j],a[i]]; } return a; };
+const pick = (a) => a[Math.floor(Math.random() * a.length)];
+const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
+const norm = (s) => (s||'').toLowerCase().replace(/[^a-z0-9 ]+/g,'').replace(/\s+/g,' ').trim();
+const escHTML = (s) => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+
+// Levenshtein ratio (0..1)
+function levRatio(a, b) {
+  a = norm(a); b = norm(b);
+  if (!a && !b) return 1;
+  const m = a.length, n = b.length;
+  if (!m || !n) return 0;
+  const dp = new Array(n + 1);
+  for (let j = 0; j <= n; j++) dp[j] = j;
+  for (let i = 1; i <= m; i++) {
+    let prev = dp[0]; dp[0] = i;
+    for (let j = 1; j <= n; j++) {
+      const tmp = dp[j];
+      dp[j] = a[i-1] === b[j-1] ? prev : 1 + Math.min(prev, dp[j], dp[j-1]);
+      prev = tmp;
+    }
+  }
+  return 1 - dp[n] / Math.max(m, n);
+}
+
+// ---------- settings ----------
+const defaultSettings = { theme: 'auto', haptics: true, tts: false, sound: true };
+let settings = { ...defaultSettings, ...safeJSON(localStorage.getItem(SETTINGS_KEY)) };
+function safeJSON(s) { try { return JSON.parse(s); } catch { return {}; } }
+function saveSettings() { try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); } catch {} }
+function applyTheme() {
+  const root = document.documentElement;
+  if (settings.theme === 'auto') root.removeAttribute('data-theme');
+  else root.setAttribute('data-theme', settings.theme);
+}
+applyTheme();
+
+function vibe(ms) { if (settings.haptics && navigator.vibrate) try { navigator.vibrate(ms); } catch {} }
+function speak(text) {
+  if (!settings.tts || !window.speechSynthesis) return;
+  try {
+    const u = new SpeechSynthesisUtterance(text);
+    u.rate = 0.95; u.pitch = 1; u.lang = 'en-US';
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(u);
+  } catch {}
+}
+
+// ---------- Leitner SRS store ----------
+// store: { cards: { [cardId]: { box, lastSeen, lapses, modality } }, progress: { [deckId]: { studied, mastered } }, lastDeck, lastMode, banner_seen_at }
+const BOX_DAYS = [0, 1, 2, 4, 7, 14]; // box 0 = new, 1..5 = scheduled
+const NEW_PER_DAY_CAP = 12;
+let store = { cards: {}, progress: {}, lastDeck: null, lastMode: null, newToday: { date: '', count: 0 } , scoreBest: {} };
+(function loadStore() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) return;
+  try { store = Object.assign(store, JSON.parse(raw)); } catch {}
+})();
+let saveTimer = 0;
+function saveStore() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(store)); } catch {}
+  }, 250);
+}
+function todayStr() { return new Date().toISOString().slice(0,10); }
+function getCard(id) {
+  if (!store.cards[id]) store.cards[id] = { box: 0, lastSeen: 0, lapses: 0, modality: null };
+  return store.cards[id];
+}
+function isDue(card) {
+  if (!card || card.box === 0) return false;
+  const days = BOX_DAYS[card.box] || 1;
+  return Date.now() - (card.lastSeen || 0) >= days * 86400000 - 3600000;
+}
+function recordResult(cardId, rating) { // rating: 'again' | 'hard' | 'good'
+  const c = getCard(cardId);
+  const wasNew = c.box === 0;
+  if (rating === 'again') {
+    c.lapses++;
+    c.box = 1;
+  } else if (rating === 'hard') {
+    c.box = Math.max(1, c.box || 1);
+  } else {
+    c.box = Math.min(5, (c.box || 0) + 1);
+  }
+  c.lastSeen = Date.now();
+  if (wasNew && rating !== 'again') {
+    if (store.newToday.date !== todayStr()) store.newToday = { date: todayStr(), count: 0 };
+    store.newToday.count++;
+  }
+  saveStore();
+}
+function deckCardIds(deckId) {
+  const d = CONTENT.decks[deckId];
+  if (!d) return [];
+  if (d.items) return d.items.map(it => typeof it === 'string' ? `${deckId}#${it}` : it.id || `${deckId}#${it.front}`);
+  if (d.lines) return d.lines.map((_, i) => `${deckId}#L${i}`);
+  if (d.verses) return d.verses.flatMap((v, vi) => v.lines.map((_, li) => `${deckId}#${vi}.${li}`));
+  return [];
+}
+function deckProgress(deckId) {
+  const ids = deckCardIds(deckId);
+  if (!ids.length) return { studied: 0, mastered: 0, total: 0, ratio: 0 };
+  let studied = 0, mastered = 0;
+  for (const id of ids) {
+    const c = store.cards[id];
+    if (!c) continue;
+    if (c.box >= 1) studied++;
+    if (c.box >= 4) mastered++;
+  }
+  return { studied, mastered, total: ids.length, ratio: mastered / ids.length };
+}
+function dueQueue(maxItems = 30) {
+  const out = [];
+  for (const id of Object.keys(store.cards)) {
+    if (isDue(store.cards[id])) out.push(id);
+  }
+  return shuffle(out).slice(0, maxItems);
+}
+function leechModality(cardId, currentMode) {
+  const c = getCard(cardId);
+  if (c.lapses >= 6 && c.modality !== currentMode) {
+    return currentMode === 'flash' ? 'cloze' : 'flash';
+  }
+  return null;
+}
+
+// ---------- topbar ----------
+function setTopbar({ title, leftIcon, leftAction, rightIcon, rightAction, rightLabel }) {
+  const left = $('#topbar-left'), right = $('#topbar-right'), titleEl = $('#topbar-title');
+  if (leftIcon) { left.innerHTML = leftIcon; left.hidden = false; left.onclick = leftAction; left.setAttribute('aria-label', 'Back'); }
+  else { left.hidden = true; left.onclick = null; }
+  if (rightIcon) { right.innerHTML = rightIcon; right.hidden = false; right.onclick = rightAction; right.setAttribute('aria-label', rightLabel || ''); }
+  else { right.hidden = true; right.onclick = null; }
+  titleEl.innerHTML = title || '<span class="wordmark">Smart Card</span>';
+}
+
+// ---------- screen mount ----------
+function mount(el) {
+  const screen = $('#screen');
+  screen.innerHTML = '';
+  screen.appendChild(el);
+  screen.scrollTop = 0;
+}
+
+// ============================================================
+// Router (hash-based)
+// ============================================================
+const routes = [];
+function route(pattern, fn) { routes.push({ pattern, fn }); }
+function navigate(path) { location.hash = path.startsWith('#') ? path : '#' + path; }
+function handleRoute() {
+  const hash = location.hash.replace(/^#/, '') || '/';
+  for (const { pattern, fn } of routes) {
+    const m = hash.match(pattern);
+    if (m) { fn(...m.slice(1)); return; }
+  }
+  navigate('/');
+}
+window.addEventListener('hashchange', handleRoute);
+
+// ============================================================
+// Settings sheet
+// ============================================================
+function openSettings() {
+  const backdrop = h('div', { class: 'sheet-backdrop', onclick: closeSettings });
+  const sheet = h('div', { class: 'sheet', role: 'dialog', 'aria-label': 'Settings' });
+  sheet.appendChild(h('div', { class: 'sheet-grab' }));
+  sheet.appendChild(h('h2', { class: 't-h1', style: 'margin:0 0 12px' }, 'Settings'));
+
+  // theme
+  const themeRow = h('div', { class: 'setting-row' });
+  themeRow.appendChild(h('div', {}, h('div', { class: 'label' }, 'Theme'), h('div', { class: 'desc' }, 'Auto follows your system')));
+  const segTheme = h('div', { class: 'seg-3', role: 'tablist' });
+  ['auto','light','dark'].forEach(t => {
+    const b = h('button', { 'aria-selected': settings.theme === t ? 'true' : 'false', text: t.charAt(0).toUpperCase() + t.slice(1) });
+    b.onclick = () => { settings.theme = t; saveSettings(); applyTheme(); $$('button', segTheme).forEach(x => x.setAttribute('aria-selected', x === b ? 'true' : 'false')); };
+    segTheme.appendChild(b);
+  });
+  themeRow.appendChild(segTheme);
+  sheet.appendChild(themeRow);
+
+  // haptics
+  sheet.appendChild(toggleRow('Haptic feedback', 'Brief vibration on locks and misses (Android)', 'haptics'));
+  // tts
+  sheet.appendChild(toggleRow('Read aloud (TTS)', 'Use the device voice for the Phonetic deck and passages', 'tts'));
+  // sound
+  sheet.appendChild(toggleRow('Audio playback', 'Play bundled Army Song / Soldier\'s Creed recordings', 'sound'));
+
+  // reset
+  const reset = h('button', { class: 'btn btn-block', style: 'margin-top:12px;color:var(--danger)', onclick: () => {
+    if (confirm('Reset all progress? This cannot be undone.')) {
+      store = { cards: {}, progress: {}, lastDeck: null, lastMode: null, newToday: { date: '', count: 0 }, scoreBest: {} };
+      saveStore();
+      closeSettings();
+      handleRoute();
+    }
+  } }, 'Reset progress');
+  sheet.appendChild(reset);
+
+  // about
+  sheet.appendChild(h('div', { class: 't-caption center', style: 'margin-top:16px' }, 'Smart Card v1 · content verified against Delta Co RSP card · Recordings: U.S. Army Band, public domain'));
+
+  document.body.appendChild(backdrop);
+  document.body.appendChild(sheet);
+  requestAnimationFrame(() => { backdrop.classList.add('open'); sheet.classList.add('open'); });
+  setTimeout(() => sheet.focus(), 250);
+}
+function toggleRow(label, desc, key) {
+  const row = h('div', { class: 'setting-row' });
+  row.appendChild(h('div', {}, h('div', { class: 'label' }, label), h('div', { class: 'desc' }, desc)));
+  const tg = h('button', { class: 'toggle' + (settings[key] ? ' on' : ''), 'aria-pressed': settings[key] ? 'true' : 'false', 'aria-label': label });
+  tg.onclick = () => { settings[key] = !settings[key]; tg.classList.toggle('on', settings[key]); tg.setAttribute('aria-pressed', settings[key] ? 'true' : 'false'); saveSettings(); };
+  row.appendChild(tg);
+  return row;
+}
+function closeSettings() {
+  $$('.sheet, .sheet-backdrop').forEach(el => {
+    el.classList.remove('open');
+    setTimeout(() => el.remove(), 240);
+  });
+}
+
+// ============================================================
+// Routes
+// ============================================================
+
+// ---------- Home ----------
+route(/^\/$/, () => {
+  setTopbar({ title: '', rightIcon: ICON.settings, rightAction: openSettings, rightLabel: 'Settings' });
+  const root = h('div', { class: 'screen-narrow' });
+
+  // first-launch banner: Android note
+  if (!store.banner_seen_at) {
+    const banner = h('div', { class: 'banner' });
+    banner.innerHTML = `<button class="x" aria-label="Dismiss">${ICON.x}</button><b>Tip:</b> Open this from Chrome on Android, then tap menu → "Add to Home screen" so progress persists. On iPhone: open from Files for best results.`;
+    banner.querySelector('.x').onclick = () => { store.banner_seen_at = Date.now(); saveStore(); banner.remove(); };
+    root.appendChild(banner);
+  }
+
+  // Continue card
+  if (store.lastDeck && CONTENT.decks[store.lastDeck]) {
+    const d = CONTENT.decks[store.lastDeck];
+    const m = store.lastMode || (d.modes && d.modes[0]);
+    const cont = h('button', { class: 'continue-card', onclick: () => navigate(`/d/${store.lastDeck}/${m}`) });
+    cont.appendChild(h('div', { style: 'flex:1' },
+      h('div', { class: 'label' }, 'Continue'),
+      h('div', { class: 'body', text: d.title }),
+      h('div', { class: 't-caption' }, modeLabel(m))
+    ));
+    cont.insertAdjacentHTML('beforeend', ICON.chev);
+    root.appendChild(cont);
+  }
+
+  // Daily Review row
+  const due = dueQueue();
+  if (due.length > 0) {
+    const r = h('button', { class: 'review-row', onclick: () => navigate('/review') });
+    r.appendChild(h('div', { style: 'flex:1' }, h('div', {}, 'Daily Review')));
+    r.appendChild(h('div', { class: 'num', text: String(due.length) }));
+    root.appendChild(r);
+  }
+
+  // Grouped deck list
+  for (const grp of CONTENT.groups) {
+    const section = h('div', { class: 'home-section' });
+    section.appendChild(h('div', { class: 'section-head' }, h('div', { class: 't-micro', text: grp.title })));
+    for (const id of grp.decks) {
+      const d = CONTENT.decks[id];
+      if (!d) continue;
+      const prog = deckProgress(id);
+      const row = h('button', { class: 'deck-row', onclick: () => navigate(`/d/${id}`) });
+      const main = h('div', {});
+      main.appendChild(h('div', { class: 'name', text: d.title }));
+      main.appendChild(h('div', { class: 'hint', text: d.hint || '' }));
+      const pb = h('div', { class: 'progress' });
+      pb.appendChild(h('i', { style: `width:${Math.round(prog.ratio * 100)}%` }));
+      main.appendChild(pb);
+      row.appendChild(main);
+      row.insertAdjacentHTML('beforeend', `<span class="chev">${ICON.chev}</span>`);
+      section.appendChild(row);
+    }
+    root.appendChild(section);
+  }
+
+  mount(root);
+});
+
+const MODE_LABELS = {
+  flash: 'Flashcards',
+  cloze: 'Fill in the blanks',
+  tfm: 'Type from memory',
+  match: 'Matching',
+  sequence: 'Tap in order',
+  speed: 'Speed round',
+  scenario: 'Scenario drill',
+  recall60: 'Recall in 60s',
+  audio: 'Listen',
+  read: 'Reference'
+};
+function modeLabel(m) { return MODE_LABELS[m] || m; }
+
+// ---------- Deck overview ----------
+route(/^\/d\/([^/]+)$/, (deckId) => {
+  const d = CONTENT.decks[deckId];
+  if (!d) return navigate('/');
+  setTopbar({ title: '', leftIcon: ICON.back, leftAction: () => navigate('/'), rightIcon: ICON.settings, rightAction: openSettings });
+  const root = h('div', { class: 'screen-narrow' });
+
+  const prog = deckProgress(deckId);
+  const hero = h('div', { class: 'deck-hero' });
+  hero.appendChild(progressRing(prog.ratio));
+  const info = h('div', { class: 'info' });
+  info.appendChild(h('div', { class: 't-h1', text: d.title }));
+  if (d.hint) info.appendChild(h('div', { class: 'preview', text: d.hint }));
+  info.appendChild(h('div', { class: 't-caption', style: 'margin-top:6px', text: `${prog.studied}/${prog.total} studied · ${prog.mastered} mastered` }));
+  hero.appendChild(info);
+  root.appendChild(hero);
+
+  // Mode segmented control
+  const modes = d.modes || ['flash'];
+  const seg = h('div', { class: 'segmented', role: 'tablist' });
+  let current = modes[0];
+  modes.forEach((m, i) => {
+    const b = h('button', { role: 'tab', 'aria-selected': i === 0 ? 'true' : 'false', text: MODE_LABELS[m] || m, data: { mode: m } });
+    b.onclick = () => { current = m; $$('button', seg).forEach(x => x.setAttribute('aria-selected', x.dataset.mode === m ? 'true' : 'false')); };
+    seg.appendChild(b);
+  });
+  root.appendChild(seg);
+
+  const actions = h('div', { class: 'deck-actions' });
+  const start = h('button', { class: 'btn btn-primary btn-block', onclick: () => { store.lastDeck = deckId; store.lastMode = current; saveStore(); navigate(`/d/${deckId}/${current}`); } }, 'Start');
+  actions.appendChild(start);
+  if (d.type !== 'reference' && d.type !== 'ordered') {
+    const browse = h('button', { class: 'btn btn-block', onclick: () => navigate(`/d/${deckId}/flash?browse=1`) }, 'Browse cards');
+    if (d.modes && d.modes.includes('flash')) actions.appendChild(browse);
+  }
+  root.appendChild(actions);
+
+  mount(root);
+});
+
+function progressRing(ratio) {
+  const wrap = h('div', { class: 'ring' });
+  const pct = clamp(ratio || 0, 0, 1);
+  const r = 26, c = 2 * Math.PI * r;
+  wrap.style.setProperty('--circ', c.toFixed(2));
+  wrap.style.setProperty('--pct', pct.toFixed(3));
+  wrap.innerHTML = `<svg viewBox="0 0 64 64"><circle class="track" cx="32" cy="32" r="${r}" fill="none" stroke-width="6"/><circle class="bar" cx="32" cy="32" r="${r}" fill="none" stroke-width="6" stroke-linecap="round"/><text x="32" y="36" text-anchor="middle">${Math.round(pct*100)}</text></svg>`;
+  return wrap;
+}
+
+// ============================================================
+// Mode: Phonetic Speed Round (60s, MC, bidirectional)
+// ============================================================
+route(/^\/d\/([^/]+)\/speed$/, (deckId) => {
+  const d = CONTENT.decks[deckId];
+  if (!d || !d.items) return navigate(`/d/${deckId}`);
+  setTopbar({ title: d.title, leftIcon: ICON.back, leftAction: () => navigate(`/d/${deckId}`) });
+
+  const items = d.items;
+  let score = 0, asked = 0;
+  let endAt = Date.now() + 60000;
+  let dir = Math.random() < 0.5 ? 'fw' : 'bw'; // alternates per question
+  let timerInterval = 0;
+  const root = h('div', { class: 'screen-narrow speed-wrap' });
+  const timerBar = h('div', { class: 'speed-timer' });
+  const tBar = h('i', { style: 'width:100%' });
+  timerBar.appendChild(tBar);
+  const meta = h('div', { class: 'speed-meta' });
+  const timeLabel = h('span', { class: 't-mono', text: '01:00' });
+  const scoreLabel = h('span', { class: 't-caption', text: '0' });
+  meta.append(scoreLabel, timeLabel);
+  const promptEl = h('div', { class: 'speed-prompt' });
+  const optsEl = h('div', { class: 'speed-options' });
+  root.append(timerBar, meta, promptEl, optsEl);
+  mount(root);
+
+  function tick() {
+    const ms = Math.max(0, endAt - Date.now());
+    tBar.style.width = (ms / 60000 * 100) + '%';
+    timeLabel.textContent = `00:${String(Math.ceil(ms / 1000)).padStart(2, '0')}`;
+    if (ms <= 0) {
+      clearInterval(timerInterval);
+      const best = store.scoreBest[deckId + ':speed'] || 0;
+      if (score > best) store.scoreBest[deckId + ':speed'] = score;
+      saveStore();
+      return endOfSession({
+        title: `${d.title} · Speed round`,
+        score, total: asked,
+        missedItems: [],
+        onDone: () => navigate(`/d/${deckId}`)
+      });
+    }
+  }
+  timerInterval = setInterval(tick, 250);
+  window.addEventListener('hashchange', () => clearInterval(timerInterval), { once: true });
+
+  function nextQ() {
+    asked++;
+    dir = dir === 'fw' ? 'bw' : 'fw';
+    const correct = pick(items);
+    const others = shuffle(items.filter(x => x.id !== correct.id)).slice(0, 3);
+    const all = shuffle([correct, ...others]);
+    const promptText = dir === 'fw' ? correct.front : correct.back;
+    const answerText = dir === 'fw' ? correct.back : correct.front;
+    promptEl.textContent = promptText;
+    optsEl.innerHTML = '';
+    all.forEach(it => {
+      const text = dir === 'fw' ? it.back : it.front;
+      const b = h('button', { text });
+      b.onclick = () => {
+        if (it.id === correct.id) {
+          b.classList.add('right'); score++; scoreLabel.textContent = String(score);
+          recordResult(correct.id, 'good'); vibe(10);
+        } else {
+          b.classList.add('wrong'); recordResult(correct.id, 'again');
+          vibe(20);
+          const rb = $$('button', optsEl).find(x => x.textContent === answerText);
+          if (rb) rb.classList.add('right');
+        }
+        setTimeout(nextQ, 250);
+      };
+      optsEl.appendChild(b);
+    });
+  }
+  nextQ();
+});
+
+// ============================================================
+// Mode: SALUTE Scenario Drill
+// ============================================================
+route(/^\/d\/([^/]+)\/scenario$/, (deckId) => {
+  const d = CONTENT.decks[deckId];
+  if (!d || !d.scenarios) return navigate(`/d/${deckId}`);
+  setTopbar({ title: d.title, leftIcon: ICON.back, leftAction: () => navigate(`/d/${deckId}`), rightIcon: ICON.retry, rightAction: () => handleRoute() });
+
+  const sc = pick(d.scenarios);
+  const letters = ['S','A','L','U','T','E'];
+  const labels = { S:'Size', A:'Activity', L:'Location', U:'Unit / Uniform', T:'Time', E:'Equipment' };
+  let i = 0, score = 0, missed = [];
+  const root = h('div', { class: 'screen-narrow' });
+  const card = h('div', { class: 'card card-pad', style: 'margin-bottom:16px' });
+  card.appendChild(h('div', { class: 't-caption', text: 'Scenario' }));
+  card.appendChild(h('p', { class: 't-passage', style: 'margin:8px 0 0', text: sc.text }));
+  root.appendChild(card);
+
+  const promptCard = h('div', { class: 'card card-pad' });
+  const letterEl = h('div', { class: 't-display mono', style: 'text-align:center' });
+  const labelEl = h('div', { class: 't-caption', style: 'text-align:center;margin-top:4px' });
+  const inp = h('input', { type: 'text', class: 'btn btn-block', style: 'margin-top:16px;text-align:center', placeholder: 'Type the answer…', autocomplete: 'off', autocapitalize: 'sentences', autocorrect: 'off', enterkeyhint: 'next' });
+  const submit = h('button', { class: 'btn btn-primary btn-block', style: 'margin-top:8px', text: 'Check' });
+  const reveal = h('button', { class: 'btn btn-ghost btn-block', style: 'margin-top:4px', text: 'Reveal' });
+  const result = h('div', { class: 't-caption', style: 'margin-top:8px;min-height:1.4em' });
+  promptCard.append(letterEl, labelEl, inp, submit, reveal, result);
+  root.appendChild(promptCard);
+  mount(root);
+
+  function step() {
+    if (i >= letters.length) {
+      return endOfSession({ title: `${d.title} · Scenario`, score, total: letters.length, missedItems: missed, onDone: () => navigate(`/d/${deckId}`) });
+    }
+    const L = letters[i];
+    letterEl.textContent = L;
+    labelEl.textContent = labels[L];
+    inp.value = ''; result.textContent = '';
+    setTimeout(() => inp.focus(), 60);
+  }
+  function check() {
+    const L = letters[i];
+    const expected = sc.answers[L];
+    const r = levRatio(inp.value, expected);
+    if (r >= 0.55 || norm(inp.value).includes(norm(expected).split(' ')[0])) {
+      score++; result.textContent = `Right — ${expected}`;
+      recordResult(`salute#${L}`, 'good'); vibe(10);
+    } else {
+      missed.push(L); result.textContent = `Expected: ${expected}`;
+      recordResult(`salute#${L}`, 'again'); vibe(20);
+    }
+    setTimeout(() => { i++; step(); }, 700);
+  }
+  function rev() { result.textContent = sc.answers[letters[i]]; missed.push(letters[i]); recordResult(`salute#${letters[i]}`, 'again'); setTimeout(() => { i++; step(); }, 700); }
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); check(); } });
+  submit.onclick = check;
+  reveal.onclick = rev;
+  step();
+});
+
+// ============================================================
+// Mode: Recall in 60s (Battle Buddy free recall)
+// ============================================================
+route(/^\/d\/([^/]+)\/recall60$/, (deckId) => {
+  const d = CONTENT.decks[deckId];
+  if (!d || !d.items) return navigate(`/d/${deckId}`);
+  setTopbar({ title: d.title, leftIcon: ICON.back, leftAction: () => navigate(`/d/${deckId}`) });
+
+  const targets = d.items.map(it => ({ id: it.id, key: norm(it.front), full: it.front, back: it.back }));
+  const found = new Set();
+  let endAt = Date.now() + 60000;
+  let interval = 0;
+  const root = h('div', { class: 'screen-narrow' });
+  root.appendChild(h('div', { class: 't-caption', text: 'Type each responsibility — short keywords are fine. 60 seconds.' }));
+  const tBarWrap = h('div', { class: 'speed-timer', style: 'margin-top:8px' });
+  const tBar = h('i', { style: 'width:100%' });
+  tBarWrap.appendChild(tBar);
+  root.appendChild(tBarWrap);
+  const time = h('div', { class: 't-mono', style: 'text-align:right;margin-top:4px', text: '01:00' });
+  root.appendChild(time);
+  const inp = h('input', { type: 'text', class: 'btn btn-block', style: 'margin-top:16px', placeholder: 'Type a responsibility and press Enter…', autocomplete: 'off', autocapitalize: 'sentences' });
+  root.appendChild(inp);
+  const list = h('div', { class: 'row-gap', style: 'margin-top:16px' });
+  targets.forEach(t => {
+    const row = h('div', { class: 'card card-pad', data: { id: t.id }, style: 'opacity:.4' });
+    row.appendChild(h('div', { class: 't-h2', text: t.full }));
+    row.appendChild(h('div', { class: 'muted', style: 'font-size:.875rem', text: t.back }));
+    list.appendChild(row);
+  });
+  root.appendChild(list);
+  mount(root);
+  setTimeout(() => inp.focus(), 60);
+
+  function tick() {
+    const ms = Math.max(0, endAt - Date.now());
+    tBar.style.width = (ms / 60000 * 100) + '%';
+    time.textContent = `00:${String(Math.ceil(ms / 1000)).padStart(2, '0')}`;
+    if (ms <= 0) finish();
+  }
+  interval = setInterval(tick, 250);
+  window.addEventListener('hashchange', () => clearInterval(interval), { once: true });
+
+  inp.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter') return;
+    const v = norm(inp.value);
+    if (!v) return;
+    let hit = null;
+    for (const t of targets) {
+      if (found.has(t.id)) continue;
+      if (t.key.includes(v) || v.includes(t.key) || levRatio(v, t.key) > 0.7 || levRatio(v, norm(t.back)) > 0.6) { hit = t; break; }
+    }
+    if (hit) {
+      found.add(hit.id);
+      const row = list.querySelector(`[data-id="${hit.id}"]`);
+      if (row) row.style.opacity = '1';
+      recordResult(hit.id, 'good'); vibe(10);
+      inp.value = '';
+      if (found.size === targets.length) finish();
+    } else {
+      vibe(20);
+      inp.style.borderColor = 'var(--danger)';
+      setTimeout(() => inp.style.borderColor = '', 220);
+    }
+  });
+
+  function finish() {
+    clearInterval(interval);
+    targets.forEach(t => { if (!found.has(t.id)) recordResult(t.id, 'again'); });
+    endOfSession({ title: `${d.title} · Recall in 60s`, score: found.size, total: targets.length, onDone: () => navigate(`/d/${deckId}`) });
+  }
+});
+
+// ============================================================
+// Mode: Audio playback (Creed / Song)
+// ============================================================
+route(/^\/d\/([^/]+)\/audio$/, (deckId) => {
+  const d = CONTENT.decks[deckId];
+  if (!d) return navigate('/');
+  setTopbar({ title: d.title, leftIcon: ICON.back, leftAction: () => navigate(`/d/${deckId}`) });
+
+  const root = h('div', { class: 'screen-narrow' });
+  const lines = passageLines(d);
+
+  // Bundled audio: read from <script id="audio-...">
+  const audioId = d.audio;
+  const b64 = audioId ? document.getElementById('audio-' + audioId)?.textContent.trim() : '';
+
+  const card = h('div', { class: 'card card-pad' });
+  if (b64) {
+    const audio = h('audio', { controls: 'controls', preload: 'metadata' });
+    audio.src = b64.startsWith('data:') ? b64 : 'data:audio/mp3;base64,' + b64;
+    card.appendChild(audio);
+  } else {
+    card.appendChild(h('div', { class: 'banner', text: 'No bundled recording found in this build. Tap "Read aloud" below to use the device voice.' }));
+    const ttsBtn = h('button', { class: 'btn btn-primary btn-block', text: 'Read aloud (TTS)' });
+    ttsBtn.onclick = () => {
+      if (!window.speechSynthesis) return alert('Speech synthesis not supported on this browser.');
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(lines.join(' '));
+      u.rate = 0.95; u.lang = 'en-US';
+      window.speechSynthesis.speak(u);
+    };
+    card.appendChild(ttsBtn);
+  }
+  card.appendChild(h('div', { class: 't-caption', style: 'margin-top:8px', text: 'Recordings: U.S. Army Band, public domain' }));
+  root.appendChild(card);
+
+  // Display the passage
+  const passage = h('div', { class: 'card card-pad t-passage', style: 'margin-top:16px' });
+  if (d.verses) {
+    d.verses.forEach(v => {
+      passage.appendChild(h('div', { class: 't-micro', text: v.label }));
+      v.lines.forEach(ln => passage.appendChild(h('p', { style: 'margin:4px 0', text: ln })));
+      passage.appendChild(h('div', { style: 'height:8px' }));
+    });
+  } else if (d.lines) {
+    d.lines.forEach(ln => passage.appendChild(h('p', { style: 'margin:6px 0', text: ln })));
+  }
+  root.appendChild(passage);
+  mount(root);
+});
+
+// ============================================================
+// Mode: Read (reference)
+// ============================================================
+route(/^\/d\/([^/]+)\/read$/, (deckId) => {
+  const d = CONTENT.decks[deckId];
+  if (!d) return navigate('/');
+  setTopbar({ title: d.title, leftIcon: ICON.back, leftAction: () => navigate(`/d/${deckId}`) });
+  const root = h('div', { class: 'screen-narrow' });
+  const card = h('div', { class: 'card card-pad t-passage' });
+  card.appendChild(h('p', { style: 'margin:0', text: d.body || '' }));
+  root.appendChild(card);
+  mount(root);
+});
+
+// ============================================================
+// Daily Review (interleaved across decks, mature cards only)
+// ============================================================
+route(/^\/review$/, () => {
+  const due = dueQueue(20);
+  setTopbar({ title: 'Daily Review', leftIcon: ICON.back, leftAction: () => navigate('/') });
+  if (!due.length) {
+    const root = h('div', { class: 'screen-narrow' });
+    root.appendChild(h('div', { class: 'empty', text: 'Nothing due yet. Study a deck to seed the review queue.' }));
+    return mount(root);
+  }
+  // Walk through due cards as flashcards (commit-then-rate)
+  let idx = 0, score = 0, missed = [];
+  const cardForId = (id) => {
+    const [deckId] = id.split('#');
+    const d = CONTENT.decks[deckId];
+    if (!d) return null;
+    const items = deckPairItems(deckId);
+    const it = items.find(x => x.id === id);
+    if (it) return { deckId, item: it, deck: d };
+    // line/verse fallback: synth a flashcard from line index
+    if (id.includes('#L')) {
+      const li = parseInt(id.split('#L')[1], 10);
+      const ln = (d.lines || [])[li];
+      if (ln) return { deckId, deck: d, item: { id, front: `${d.title} — line ${li+1}`, back: ln } };
+    }
+    return null;
+  };
+
+  const render = () => {
+    if (idx >= due.length) {
+      return endOfSession({ title: 'Daily Review', score, total: due.length, missedItems: missed, onDone: () => navigate('/') });
+    }
+    const ctx = cardForId(due[idx]);
+    if (!ctx) { idx++; return render(); }
+    const { item, deck } = ctx;
+
+    const wrap = h('div', { class: 'screen-narrow fc-wrap' });
+    const meta = h('div', { class: 'fc-meta' });
+    meta.appendChild(h('span', { class: 't-caption', text: `${idx + 1} of ${due.length}` }));
+    const pb = h('div', { class: 'fc-progress' });
+    pb.appendChild(h('i', { style: `width:${(idx / due.length) * 100}%` }));
+    meta.appendChild(pb);
+    meta.appendChild(h('span', { class: 't-caption', text: deck.title.split(' ')[0] }));
+    wrap.appendChild(meta);
+
+    const area = h('div', { class: 'fc-card-area' });
+    const inner = h('div', { class: 'fc-card', tabindex: '0' });
+    const front = h('div', { class: 'fc-face front' });
+    front.appendChild(h('div', { class: 'fc-prompt', text: deck.title }));
+    front.appendChild(h('div', { class: 'fc-term', text: item.front }));
+    const back = h('div', { class: 'fc-face back' });
+    back.appendChild(h('div', { class: 'fc-prompt', text: 'Answer' }));
+    back.appendChild(h('div', { class: 'fc-def', text: item.back }));
+    inner.append(front, back);
+    area.appendChild(inner);
+    wrap.appendChild(area);
+
+    let flipped = false;
+    inner.onclick = () => { if (!flipped) { flipped = true; inner.classList.add('is-flipped'); setTimeout(showRate, 320); } };
+
+    function showRate() {
+      const rate = h('div', { class: 'fc-rate' });
+      rate.append(
+        h('button', { class: 'again', text: 'Again', onclick: () => { recordResult(item.id, 'again'); missed.push(item.front); idx++; render(); } }),
+        h('button', { class: 'good', text: 'Hard', onclick: () => { recordResult(item.id, 'hard'); score++; idx++; render(); } }),
+        h('button', { class: 'easy', text: 'Good', onclick: () => { recordResult(item.id, 'good'); score++; idx++; render(); } })
+      );
+      wrap.appendChild(rate);
+    }
+    mount(wrap);
+  };
+  render();
+});
+
+// ============================================================
+// Mode: Matching (tap-tap, two columns)
+// ============================================================
+route(/^\/d\/([^/]+)\/match$/, (deckId) => {
+  const d = CONTENT.decks[deckId];
+  if (!d) return navigate('/');
+  setTopbar({ title: d.title, leftIcon: ICON.back, leftAction: () => navigate(`/d/${deckId}`), rightIcon: ICON.retry, rightAction: () => handleRoute() });
+
+  const items = deckPairItems(deckId);
+  if (!items.length) return navigate(`/d/${deckId}`);
+
+  // 6 pairs per round
+  const pool = shuffle(items);
+  const ROUND = 6;
+  let cursor = 0;
+  let score = 0, totalRounds = Math.ceil(items.length / ROUND);
+  let roundNo = 0;
+
+  function startRound() {
+    if (cursor >= pool.length) {
+      return endOfSession({
+        title: `${d.title} · Matching`,
+        score, total: items.length,
+        onDone: () => navigate(`/d/${deckId}`)
+      });
+    }
+    roundNo++;
+    const slice = pool.slice(cursor, cursor + ROUND);
+    cursor += ROUND;
+
+    const root = h('div', { class: 'screen-narrow' });
+    root.appendChild(h('div', { class: 't-caption', text: `Round ${roundNo} of ${totalRounds} · tap a term, then its match` }));
+
+    const grid = h('div', { class: 'match-grid' });
+    const lefts = shuffle(slice).map(it => ({ side: 'L', id: it.id, label: it.front }));
+    const rights = shuffle(slice).map(it => ({ side: 'R', id: it.id, label: it.back }));
+    // interleave columns: L, R, L, R, ...
+    const interleaved = [];
+    for (let i = 0; i < slice.length; i++) {
+      interleaved.push(lefts[i]);
+      interleaved.push(rights[i]);
+    }
+
+    let sel = null;
+    interleaved.forEach(it => {
+      const tile = h('button', { class: 'match-tile', text: it.label, data: { id: it.id, side: it.side } });
+      tile.onclick = () => {
+        if (tile.classList.contains('match')) return;
+        if (!sel) {
+          sel = tile; tile.classList.add('sel'); return;
+        }
+        if (sel === tile) { tile.classList.remove('sel'); sel = null; return; }
+        if (sel.dataset.side === tile.dataset.side) {
+          // re-select
+          sel.classList.remove('sel'); tile.classList.add('sel'); sel = tile; return;
+        }
+        const right = sel.dataset.id === tile.dataset.id;
+        if (right) {
+          sel.classList.remove('sel'); sel.classList.add('match'); tile.classList.add('match');
+          score++;
+          recordResult(it.id, 'good');
+          vibe(10);
+          sel = null;
+          if ($$('.match-tile:not(.match)', grid).length === 0) {
+            setTimeout(startRound, 350);
+          }
+        } else {
+          sel.classList.remove('sel'); sel.classList.add('miss'); tile.classList.add('miss');
+          recordResult(sel.dataset.id, 'again'); recordResult(tile.dataset.id, 'again');
+          vibe(20);
+          const ms = sel; const mt = tile;
+          setTimeout(() => { ms.classList.remove('miss'); mt.classList.remove('miss'); }, 220);
+          sel = null;
+        }
+      };
+      grid.appendChild(tile);
+    });
+    root.appendChild(grid);
+    mount(root);
+  }
+  startRound();
+});
+
+// ============================================================
+// Mode: Sequencer (tap-in-order)
+// ============================================================
+route(/^\/d\/([^/]+)\/sequence$/, (deckId) => {
+  const d = CONTENT.decks[deckId];
+  if (!d || !d.items || typeof d.items[0] !== 'string') return navigate(`/d/${deckId}`);
+  setTopbar({ title: d.title, leftIcon: ICON.back, leftAction: () => navigate(`/d/${deckId}`), rightIcon: ICON.retry, rightAction: () => handleRoute() });
+
+  const correctOrder = d.items.slice();
+  let pool = shuffle(correctOrder.map((s, i) => ({ s, i })));
+  let placed = 0, missCount = 0;
+
+  const root = h('div', { class: 'screen-narrow' });
+  root.appendChild(h('div', { class: 't-caption', style: 'margin-bottom:8px', text: 'Tap items in correct order, top to bottom.' }));
+  const placedEl = h('div', { class: 'seq-placed' });
+  const poolEl = h('div', { class: 'seq-pool' });
+  const hintBtn = h('button', { class: 'btn btn-ghost', style: 'margin-top:12px', text: 'Hint' });
+
+  hintBtn.onclick = () => {
+    const next = correctOrder[placed];
+    if (!next) return;
+    const tile = $$('.seq-tile', poolEl).find(t => t.dataset.text === next);
+    if (tile) {
+      tile.style.outline = '2px solid var(--accent)';
+      setTimeout(() => tile.style.outline = '', 1000);
+    }
+  };
+
+  function renderPool() {
+    poolEl.innerHTML = '';
+    pool.forEach(p => {
+      const t = h('button', { class: 'seq-tile', text: p.s, data: { text: p.s, idx: String(p.i) } });
+      t.onclick = () => attempt(t, p);
+      poolEl.appendChild(t);
+    });
+  }
+
+  function attempt(tile, item) {
+    if (item.s === correctOrder[placed]) {
+      // place it
+      pool = pool.filter(x => x !== item);
+      const placedTile = h('div', { class: 'seq-tile placed' });
+      placedTile.appendChild(h('span', { class: 'num', text: String(placed + 1).padStart(2, '0') + '. ' }));
+      placedTile.appendChild(document.createTextNode(item.s));
+      placedEl.appendChild(placedTile);
+      placed++; vibe(10);
+      tile.remove();
+      if (placed === correctOrder.length) {
+        const score = correctOrder.length - missCount;
+        correctOrder.forEach((s, i) => recordResult(`${deckId}#${i}`, missCount === 0 ? 'good' : 'hard'));
+        return endOfSession({ title: `${d.title} · Tap in order`, score, total: correctOrder.length, onDone: () => navigate(`/d/${deckId}`) });
+      }
+    } else {
+      tile.classList.add('miss');
+      missCount++; vibe(20);
+      setTimeout(() => tile.classList.remove('miss'), 200);
+    }
+  }
+
+  root.append(placedEl, poolEl, hintBtn);
+  mount(root);
+  renderPool();
+});
+
+// ============================================================
+// Mode: Cloze fill-in
+// ============================================================
+
+function passageLines(deck) {
+  if (deck.lines) return deck.lines.slice();
+  if (deck.verses) return deck.verses.flatMap(v => v.lines.slice());
+  if (deck.items && Array.isArray(deck.items) && typeof deck.items[0] === 'object') {
+    return deck.items.map(it => `${it.front}: ${it.back}`);
+  }
+  return [];
+}
+
+function chooseBlanks(line, ratio = 0.35) {
+  const tokens = line.split(/(\s+|[,.;:!?—'])/);
+  const wordIdx = [];
+  tokens.forEach((t, i) => {
+    if (/^[A-Za-z][A-Za-z'’\-]*$/.test(t) && t.length >= 3) wordIdx.push(i);
+  });
+  // Deterministic seed by line content for stable blanks per session
+  const N = Math.max(1, Math.round(wordIdx.length * ratio));
+  const picks = new Set();
+  let seed = 0; for (let i = 0; i < line.length; i++) seed = (seed * 31 + line.charCodeAt(i)) >>> 0;
+  const order = wordIdx.slice();
+  // pseudo-shuffle by seed
+  for (let i = order.length - 1; i > 0; i--) {
+    seed = (seed * 1664525 + 1013904223) >>> 0;
+    const j = seed % (i + 1);
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  for (let i = 0; i < N && i < order.length; i++) picks.add(order[i]);
+  return { tokens, picks };
+}
+
+route(/^\/d\/([^/]+)\/cloze$/, (deckId) => {
+  const d = CONTENT.decks[deckId];
+  if (!d) return navigate('/');
+  setTopbar({ title: d.title, leftIcon: ICON.back, leftAction: () => navigate(`/d/${deckId}`), rightIcon: ICON.retry, rightAction: () => handleRoute() });
+
+  const root = h('div', { class: 'screen-narrow cloze-wrap' });
+  const lines = passageLines(d);
+  if (!lines.length) {
+    root.appendChild(h('div', { class: 'empty', text: 'No passage available for this deck.' }));
+    return mount(root);
+  }
+  const passage = h('div', { class: 'cloze-passage t-passage' });
+  let blanks = [];
+  let total = 0, correct = 0;
+
+  lines.forEach((line, lineIdx) => {
+    const { tokens, picks } = chooseBlanks(line, 0.30);
+    const p = h('p', { style: 'margin:0 0 10px' });
+    tokens.forEach((tok, i) => {
+      if (picks.has(i)) {
+        const inp = h('input', {
+          class: 'cloze-blank',
+          type: 'text',
+          autocomplete: 'off', autocapitalize: 'off', autocorrect: 'off', spellcheck: 'false',
+          enterkeyhint: 'next',
+          'aria-label': `Blank ${blanks.length + 1}`,
+          size: Math.max(4, tok.length)
+        });
+        inp.dataset.answer = tok;
+        inp.dataset.idx = blanks.length;
+        blanks.push({ el: inp, answer: tok, lineIdx });
+        total++;
+        p.appendChild(inp);
+      } else {
+        p.appendChild(document.createTextNode(tok));
+      }
+    });
+    passage.appendChild(p);
+  });
+  root.appendChild(passage);
+
+  const bar = h('div', { class: 'cloze-bar' });
+  const hint = h('div', { class: 'hint', text: '' });
+  const inp = h('input', { type: 'text', placeholder: 'Type the missing word…', autocomplete: 'off', autocapitalize: 'off', autocorrect: 'off', spellcheck: 'false', enterkeyhint: 'next' });
+  const reveal = h('button', { class: 'btn small', text: 'Reveal' });
+  const skip = h('button', { class: 'btn small btn-ghost', text: 'Skip' });
+  bar.append(hint, inp, reveal, skip);
+  document.body.appendChild(bar);
+  // remove on navigation away
+  const cleanupBar = () => bar.remove();
+  window.addEventListener('hashchange', cleanupBar, { once: true });
+
+  let cur = 0;
+  function focusBlank(i) {
+    if (i >= blanks.length) {
+      hint.textContent = '';
+      inp.value = '';
+      checkComplete();
+      return;
+    }
+    cur = i;
+    const b = blanks[i];
+    hint.textContent = `${i + 1}/${blanks.length}`;
+    inp.value = b.el.value || '';
+    inp.focus({ preventScroll: false });
+    b.el.scrollIntoView?.({ block: 'center', behavior: 'smooth' });
+  }
+  inp.addEventListener('input', () => {
+    blanks[cur] && (blanks[cur].el.value = inp.value);
+  });
+  inp.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); submitCurrent(); }
+  });
+  reveal.onclick = () => { revealCurrent(); };
+  skip.onclick = () => { focusBlank(cur + 1); };
+
+  function submitCurrent() {
+    const b = blanks[cur];
+    if (!b) return;
+    const right = norm(inp.value) === norm(b.answer);
+    if (right) {
+      b.el.classList.remove('is-wrong'); b.el.classList.add('is-correct');
+      b.el.value = b.answer;
+      correct++;
+      vibe(10);
+      focusBlank(cur + 1);
+    } else {
+      b.el.classList.add('is-wrong');
+      vibe(20);
+      // stay on this blank but don't shake
+    }
+  }
+  function revealCurrent() {
+    const b = blanks[cur];
+    if (!b) return;
+    b.el.classList.remove('is-wrong', 'is-correct'); b.el.classList.add('is-revealed');
+    b.el.value = b.answer;
+    focusBlank(cur + 1);
+  }
+  function checkComplete() {
+    // Lazy summary
+    const remaining = blanks.filter(b => !b.el.classList.contains('is-correct') && !b.el.classList.contains('is-revealed'));
+    if (remaining.length === 0) {
+      cleanupBar();
+      // record progress: mark each line as 'good' if all blanks on it correct
+      const lineRight = new Map();
+      blanks.forEach(b => {
+        const got = b.el.classList.contains('is-correct');
+        const cur = lineRight.get(b.lineIdx);
+        lineRight.set(b.lineIdx, cur === undefined ? got : cur && got);
+      });
+      lineRight.forEach((right, li) => {
+        recordResult(`${deckId}#L${li}`, right ? 'good' : 'again');
+      });
+      endOfSession({
+        title: `${d.title} · Cloze`,
+        score: correct, total,
+        onDone: () => navigate(`/d/${deckId}`)
+      });
+    }
+  }
+
+  // tap a blank to jump to it
+  blanks.forEach((b, i) => {
+    b.el.addEventListener('focus', () => focusBlank(i));
+  });
+
+  mount(root);
+  setTimeout(() => focusBlank(0), 100);
+});
+
+// ============================================================
+// Mode: Type-from-memory (line-by-line)
+// ============================================================
+route(/^\/d\/([^/]+)\/tfm$/, (deckId) => {
+  const d = CONTENT.decks[deckId];
+  if (!d) return navigate('/');
+  setTopbar({ title: d.title, leftIcon: ICON.back, leftAction: () => navigate(`/d/${deckId}`), rightIcon: ICON.retry, rightAction: () => handleRoute() });
+
+  const lines = passageLines(d);
+  const root = h('div', { class: 'screen-narrow tfm-wrap' });
+  if (!lines.length) { root.appendChild(h('div', { class: 'empty', text: 'No passage available for this deck.' })); return mount(root); }
+
+  const passage = h('div', { class: 'tfm-passage' });
+  const lineEls = lines.map((ln, i) => {
+    const el = h('div', { class: 'tfm-line', data: { i: String(i) } });
+    el.appendChild(h('span', { class: 'hint', text: firstLetterHint(ln) }));
+    passage.appendChild(el);
+    return el;
+  });
+  root.appendChild(passage);
+
+  const bar = h('div', { class: 'cloze-bar' });
+  const hint = h('div', { class: 'hint' });
+  const inp = h('input', { type: 'text', placeholder: 'Type the line…', autocomplete: 'off', autocapitalize: 'sentences', autocorrect: 'off', spellcheck: 'false', enterkeyhint: 'send' });
+  const submit = h('button', { class: 'btn btn-primary small', text: 'Check' });
+  const showBtn = h('button', { class: 'btn small btn-ghost', text: 'Reveal' });
+  bar.append(hint, inp, submit, showBtn);
+  document.body.appendChild(bar);
+  window.addEventListener('hashchange', () => bar.remove(), { once: true });
+
+  let i = 0, score = 0, missed = [];
+
+  function step() {
+    if (i >= lines.length) {
+      bar.remove();
+      lineEls.forEach((el, k) => recordResult(`${deckId}#L${k}`, missed.includes(k) ? 'again' : 'good'));
+      return endOfSession({
+        title: `${d.title} · Type from memory`,
+        score, total: lines.length,
+        missedItems: missed.map(k => `Line ${k+1}`),
+        onDone: () => navigate(`/d/${deckId}`)
+      });
+    }
+    lineEls.forEach((el, k) => el.classList.toggle('current', k === i));
+    hint.textContent = `${i + 1}/${lines.length}`;
+    inp.value = '';
+    inp.focus({ preventScroll: false });
+    lineEls[i].scrollIntoView?.({ block: 'center', behavior: 'smooth' });
+  }
+  function check() {
+    const expected = lines[i];
+    const r = levRatio(inp.value, expected);
+    const right = r >= 0.85;
+    const el = lineEls[i];
+    el.classList.remove('current', 'miss');
+    el.innerHTML = '';
+    if (right) {
+      el.appendChild(h('span', { text: expected }));
+      el.classList.add('done');
+      score++; vibe(10);
+    } else {
+      missed.push(i);
+      el.classList.add('miss');
+      el.appendChild(h('span', { text: expected }));
+      el.appendChild(h('div', { class: 't-caption', text: `you typed: ${inp.value || '(blank)'} · ${(r*100|0)}% match` }));
+      vibe(20);
+    }
+    i++; step();
+  }
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); check(); } });
+  submit.onclick = check;
+  showBtn.onclick = () => { missed.push(i); const el = lineEls[i]; el.classList.remove('current'); el.classList.add('miss'); el.innerHTML = ''; el.appendChild(h('span', { text: lines[i] })); i++; step(); };
+
+  mount(root);
+  setTimeout(step, 100);
+});
+
+function firstLetterHint(line) {
+  return line.split(/\s+/).map(w => {
+    if (!w) return '';
+    if (/^[A-Za-z]/.test(w)) return w[0] + (w.length > 1 ? '_'.repeat(Math.min(w.length - 1, 4)) : '');
+    return w;
+  }).join(' ');
+}
+
+// ============================================================
+// Mode: Flashcards (commit-before-reveal for boxes 0–1, quick review for mature)
+// ============================================================
+
+function deckPairItems(deckId) {
+  const d = CONTENT.decks[deckId];
+  if (!d) return [];
+  if (d.items && Array.isArray(d.items) && typeof d.items[0] === 'object') {
+    return d.items.map(it => ({ id: it.id, front: it.front, back: it.back }));
+  }
+  if (d.items && typeof d.items[0] === 'string') {
+    // ordered (rank list) — use front=item, back=position
+    return d.items.map((s, i) => ({ id: `${deckId}#${i}`, front: s, back: `Position ${i + 1}` }));
+  }
+  return [];
+}
+
+route(/^\/d\/([^/]+)\/flash(\?.*)?$/, (deckId) => {
+  const d = CONTENT.decks[deckId];
+  if (!d) return navigate('/');
+  const items = deckPairItems(deckId);
+  if (!items.length) return navigate(`/d/${deckId}`);
+
+  // Order: due cards first, then unseen, shuffled within group
+  const due = []; const unseen = []; const learned = [];
+  for (const it of items) {
+    const c = store.cards[it.id];
+    if (!c || c.box === 0) unseen.push(it);
+    else if (isDue(c)) due.push(it);
+    else learned.push(it);
+  }
+  const order = [...shuffle(due), ...shuffle(unseen).slice(0, NEW_PER_DAY_CAP), ...shuffle(learned)];
+  const total = order.length;
+  let idx = 0, missed = [], correct = 0;
+  // browse mode: if ?browse=1 just iterate without scoring
+  const browse = location.hash.includes('browse=1');
+
+  const render = () => {
+    if (idx >= total) {
+      return endOfSession({
+        title: `${d.title} · Flashcards`,
+        score: correct, total,
+        missedItems: missed.map(m => m.front),
+        onReview: missed.length ? () => {
+          const ids = new Set(missed.map(m => m.id));
+          const order2 = items.filter(it => ids.has(it.id));
+          missed = []; correct = 0; idx = 0; order.length = 0; order.push(...order2); total2(order.length);
+        } : null
+      });
+    }
+    setTopbar({ title: d.title, leftIcon: ICON.back, leftAction: () => navigate(`/d/${deckId}`), rightIcon: ICON.shuffle, rightAction: () => { shuffleRest(); render(); }, rightLabel: 'Shuffle' });
+    const it = order[idx];
+    const card = store.cards[it.id] || { box: 0, lapses: 0 };
+    const requireCommit = !browse && card.box <= 1;
+
+    const wrap = h('div', { class: 'screen-narrow fc-wrap' });
+    const meta = h('div', { class: 'fc-meta' });
+    meta.appendChild(h('span', { class: 't-caption', text: `${idx + 1} of ${total}` }));
+    const pb = h('div', { class: 'fc-progress' });
+    pb.appendChild(h('i', { style: `width:${(idx / total) * 100}%` }));
+    meta.appendChild(pb);
+    meta.appendChild(h('span', { class: 't-caption', text: `box ${card.box || 0}` }));
+    wrap.appendChild(meta);
+
+    const area = h('div', { class: 'fc-card-area' });
+    const inner = h('div', { class: 'fc-card', tabindex: '0', 'aria-live': 'polite' });
+    const front = h('div', { class: 'fc-face front' });
+    if (deckId === 'phonetic' || deckId === 'numbers') {
+      front.appendChild(h('div', { class: 'fc-prompt', text: 'Letter / digit' }));
+      front.appendChild(h('div', { class: 'fc-term mono', text: it.front }));
+    } else {
+      front.appendChild(h('div', { class: 'fc-prompt', text: pairFrontPrompt(d) }));
+      front.appendChild(h('div', { class: 'fc-term', text: it.front }));
+    }
+    if (settings.tts) {
+      const sp = h('button', { class: 'fc-speak', 'aria-label': 'Read aloud' });
+      sp.innerHTML = ICON.speaker;
+      sp.onclick = (e) => { e.stopPropagation(); speak(deckId === 'phonetic' ? `${it.front}, ${it.back}` : it.front); };
+      front.appendChild(sp);
+    }
+
+    const back = h('div', { class: 'fc-face back' });
+    back.appendChild(h('div', { class: 'fc-prompt', text: pairBackPrompt(d) }));
+    back.appendChild(h('div', { class: 'fc-def', text: it.back }));
+    inner.append(front, back);
+    area.appendChild(inner);
+    wrap.appendChild(area);
+
+    let revealed = false;
+    function reveal() {
+      if (revealed) return;
+      revealed = true;
+      inner.classList.add('is-flipped');
+      setTimeout(showRate, 320);
+      if (settings.tts) speak(it.back);
+    }
+    inner.onclick = () => { if (!requireCommit) reveal(); };
+
+    // commit input (for new cards)
+    if (requireCommit) {
+      const commit = h('div', { class: 'fc-commit' });
+      const inp = h('input', { type: 'text', autocomplete: 'off', autocapitalize: 'off', autocorrect: 'off', spellcheck: 'false', enterkeyhint: 'go', placeholder: 'Type the answer…' });
+      const go = h('button', { class: 'btn btn-primary', text: 'Check' });
+      commit.append(inp, go);
+      wrap.appendChild(commit);
+      const submit = () => {
+        const r = levRatio(inp.value, it.back);
+        const right = r >= 0.85;
+        if (!right) { missed.push(it); commit.style.borderColor = ''; inp.style.borderColor = 'var(--danger)'; }
+        else { correct++; }
+        recordResult(it.id, right ? 'good' : 'again');
+        reveal();
+      };
+      inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') submit(); });
+      go.onclick = submit;
+      const skip = h('button', { class: 'btn btn-ghost', style: 'margin:8px auto 0;display:block', text: 'Skip — show me', onclick: () => { reveal(); } });
+      wrap.appendChild(skip);
+      setTimeout(() => inp.focus({ preventScroll: true }), 60);
+    }
+
+    function showRate() {
+      // For mature cards (no commit), show 3-button rating; for new cards, just continue
+      if (requireCommit) {
+        const next = h('div', { class: 'fc-rate', style: 'grid-template-columns:1fr' });
+        next.appendChild(h('button', { class: 'btn btn-primary', text: 'Next', onclick: () => { idx++; render(); } }));
+        wrap.appendChild(next);
+        return;
+      }
+      const rate = h('div', { class: 'fc-rate' });
+      const ag = h('button', { class: 'again', text: 'Again', onclick: () => { recordResult(it.id, 'again'); missed.push(it); vibe(20); idx++; render(); } });
+      const hd = h('button', { class: 'good', text: 'Hard', onclick: () => { recordResult(it.id, 'hard'); correct++; vibe(10); idx++; render(); } });
+      const ez = h('button', { class: 'easy', text: 'Good', onclick: () => { recordResult(it.id, 'good'); correct++; vibe(10); idx++; render(); } });
+      rate.append(ag, hd, ez);
+      wrap.appendChild(rate);
+    }
+
+    mount(wrap);
+    if (settings.tts && !requireCommit) speak(it.front);
+  };
+
+  function shuffleRest() {
+    const rest = order.slice(idx);
+    const sh = shuffle(rest);
+    for (let i = 0; i < sh.length; i++) order[idx + i] = sh[i];
+  }
+  function total2(n) { /* called when reviewing misses */ }
+
+  render();
+});
+
+function pairFrontPrompt(deck) {
+  if (deck.title.includes('LDRSHIP')) return 'Value';
+  if (deck.title.includes('Phonetic')) return 'Letter';
+  if (deck.title.includes('SALUTE')) return 'Letter';
+  if (deck.title.includes('Numbers')) return 'Digit';
+  if (deck.title.includes('Battle Buddy')) return 'Concept';
+  if (deck.title.includes('Orders')) return 'Order';
+  return 'Term';
+}
+function pairBackPrompt(deck) {
+  if (deck.title.includes('LDRSHIP')) return 'Definition';
+  if (deck.title.includes('Phonetic') || deck.title.includes('Numbers')) return 'Pronunciation';
+  if (deck.title.includes('SALUTE')) return 'Element';
+  if (deck.title.includes('Orders')) return 'Text';
+  return 'Answer';
+}
+
+// ============================================================
+// Score / end-of-session screen (shared)
+// ============================================================
+function endOfSession({ title, score, total, missedItems = [], onReview, onDone }) {
+  const root = h('div', { class: 'screen-narrow' });
+  const card = h('div', { class: 'score-screen card' });
+  card.appendChild(h('div', { class: 't-caption', text: title || 'Session complete' }));
+  card.appendChild(h('div', { class: 'num', text: `${score}/${total}` }));
+  card.appendChild(h('div', { class: 'meta', text: `${Math.round(100 * (score / Math.max(1, total)))}% correct` }));
+  const bar = h('div', { class: 'score-bar' });
+  bar.appendChild(h('i', { class: 'ok', style: `width:${(score/Math.max(1,total))*100}%` }));
+  bar.appendChild(h('i', { class: 'no', style: `width:${((total-score)/Math.max(1,total))*100}%` }));
+  card.appendChild(bar);
+  if (missedItems.length) {
+    card.appendChild(h('div', { class: 't-caption', style: 'margin-top:8px', text: 'Missed: ' + missedItems.slice(0,3).join(', ') + (missedItems.length > 3 ? '…' : '') }));
+  }
+  const actions = h('div', { class: 'row-gap', style: 'width:100%;margin-top:16px' });
+  if (onReview) actions.appendChild(h('button', { class: 'btn btn-primary btn-block', onclick: onReview }, 'Review misses'));
+  actions.appendChild(h('button', { class: 'btn btn-block', onclick: onDone || (() => navigate('/')) }, 'Done'));
+  card.appendChild(actions);
+  root.appendChild(card);
+  mount(root);
+  vibe([15, 40, 15]);
+}
+
+// ============================================================
+// Boot
+// ============================================================
+window.addEventListener('DOMContentLoaded', () => {
+  if (!location.hash) location.hash = '#/';
+  handleRoute();
+});
+
+</script>
+</body>
+</html>
