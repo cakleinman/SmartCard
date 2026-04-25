@@ -2102,14 +2102,15 @@ route(/^\/review$/, () => {
     meta.appendChild(h('span', { class: 't-caption', text: deck.title.split(' ')[0] }));
     wrap.appendChild(meta);
 
+    const cfg = flashCardConfig(deckId, deck, item, store.cards[item.id] || { box: 0 }, true);
     const area = h('div', { class: 'fc-card-area' });
     const inner = h('div', { class: 'fc-card', tabindex: '0' });
     const front = h('div', { class: 'fc-face front' });
     front.appendChild(h('div', { class: 'fc-prompt', text: deck.title }));
-    front.appendChild(h('div', { class: 'fc-term', text: item.front }));
+    front.appendChild(h('div', { class: cfg.cueIsLong ? 'fc-def' : 'fc-term', text: cfg.cue }));
     const back = h('div', { class: 'fc-face back' });
-    back.appendChild(h('div', { class: 'fc-prompt', text: 'Answer' }));
-    back.appendChild(h('div', { class: 'fc-def', text: item.back }));
+    back.appendChild(h('div', { class: 'fc-prompt', text: cfg.swap ? cfg.answerPrompt : 'Answer' }));
+    back.appendChild(h('div', { class: cfg.answerIsLong ? 'fc-def' : 'fc-term', text: cfg.answer }));
     inner.append(front, back);
     area.appendChild(inner);
     wrap.appendChild(area);
@@ -2584,7 +2585,7 @@ route(/^\/d\/([^/]+)\/flash(\?.*)?$/, (deckId) => {
     setTopbar({ title: d.title, leftIcon: ICON.back, leftAction: () => navigate(`/d/${deckId}`), rightIcon: ICON.shuffle, rightAction: () => { shuffleRest(); render(); }, rightLabel: 'Shuffle' });
     const it = order[idx];
     const card = store.cards[it.id] || { box: 0, lapses: 0 };
-    const requireCommit = !browse && card.box <= 1;
+    const cfg = flashCardConfig(deckId, d, it, card, browse);
 
     const wrap = h('div', { class: 'screen-narrow fc-wrap' });
     const meta = h('div', { class: 'fc-meta' });
@@ -2598,23 +2599,19 @@ route(/^\/d\/([^/]+)\/flash(\?.*)?$/, (deckId) => {
     const area = h('div', { class: 'fc-card-area' });
     const inner = h('div', { class: 'fc-card', tabindex: '0', 'aria-live': 'polite' });
     const front = h('div', { class: 'fc-face front' });
-    if (deckId === 'phonetic' || deckId === 'numbers') {
-      front.appendChild(h('div', { class: 'fc-prompt', text: 'Letter / digit' }));
-      front.appendChild(h('div', { class: 'fc-term mono', text: it.front }));
-    } else {
-      front.appendChild(h('div', { class: 'fc-prompt', text: pairFrontPrompt(d) }));
-      front.appendChild(h('div', { class: 'fc-term', text: it.front }));
-    }
+    const monoCue = !cfg.swap && (deckId === 'phonetic' || deckId === 'numbers');
+    front.appendChild(h('div', { class: 'fc-prompt', text: cfg.cuePrompt }));
+    front.appendChild(h('div', { class: cfg.cueIsLong ? 'fc-def' : (monoCue ? 'fc-term mono' : 'fc-term'), text: cfg.cue }));
     if (settings.tts) {
       const sp = h('button', { class: 'fc-speak', 'aria-label': 'Read aloud' });
       sp.innerHTML = ICON.speaker;
-      sp.onclick = (e) => { e.stopPropagation(); speak(deckId === 'phonetic' ? `${it.front}, ${it.back}` : it.front); };
+      sp.onclick = (e) => { e.stopPropagation(); speak(deckId === 'phonetic' ? `${it.front}, ${it.back}` : cfg.cue); };
       front.appendChild(sp);
     }
 
     const back = h('div', { class: 'fc-face back' });
-    back.appendChild(h('div', { class: 'fc-prompt', text: pairBackPrompt(d) }));
-    back.appendChild(h('div', { class: 'fc-def', text: it.back }));
+    back.appendChild(h('div', { class: 'fc-prompt', text: cfg.answerPrompt }));
+    back.appendChild(h('div', { class: cfg.answerIsLong ? 'fc-def' : 'fc-term', text: cfg.answer }));
     inner.append(front, back);
     area.appendChild(inner);
     wrap.appendChild(area);
@@ -2627,20 +2624,19 @@ route(/^\/d\/([^/]+)\/flash(\?.*)?$/, (deckId) => {
       inner.classList.add('is-flipped');
       if (commitUI) commitUI.remove();
       setTimeout(showRate, 320);
-      if (settings.tts) speak(it.back);
+      if (settings.tts) speak(cfg.answer);
     }
-    inner.onclick = () => { if (!requireCommit) reveal(); };
+    inner.onclick = () => { if (!cfg.requireCommit) reveal(); };
 
-    // commit input (for new cards)
-    if (requireCommit) {
+    if (cfg.requireCommit) {
       commitUI = h('div');
       const commit = h('div', { class: 'fc-commit' });
-      const inp = h('input', { type: 'text', autocomplete: 'off', autocapitalize: 'off', autocorrect: 'off', spellcheck: 'false', enterkeyhint: 'go', placeholder: 'Type the answer…' });
+      const inp = h('input', { type: 'text', autocomplete: 'off', autocapitalize: 'off', autocorrect: 'off', spellcheck: 'false', enterkeyhint: 'go', placeholder: `Type the ${cfg.answerPrompt.toLowerCase()}…` });
       const go = h('button', { class: 'btn btn-primary', text: 'Check' });
       commit.append(inp, go);
       commitUI.appendChild(commit);
       const submit = () => {
-        const r = levRatio(inp.value, it.back);
+        const r = levRatio(inp.value, cfg.answer);
         const right = r >= 0.85;
         if (!right) { missed.push(it); inp.style.borderColor = 'var(--danger)'; }
         else { correct++; }
@@ -2656,8 +2652,7 @@ route(/^\/d\/([^/]+)\/flash(\?.*)?$/, (deckId) => {
     }
 
     function showRate() {
-      // For mature cards (no commit), show 3-button rating; for new cards, just continue
-      if (requireCommit) {
+      if (cfg.requireCommit) {
         const next = h('div', { style: 'width:88vw;max-width:480px;margin:var(--s-4) auto 0' });
         next.appendChild(h('button', { class: 'btn btn-primary btn-block', text: 'Next', onclick: () => { idx++; render(); } }));
         wrap.appendChild(next);
@@ -2672,7 +2667,7 @@ route(/^\/d\/([^/]+)\/flash(\?.*)?$/, (deckId) => {
     }
 
     mount(wrap);
-    if (settings.tts && !requireCommit) speak(it.front);
+    if (settings.tts && !cfg.requireCommit) speak(cfg.cue);
   };
 
   function shuffleRest() {
@@ -2699,6 +2694,33 @@ function pairBackPrompt(deck) {
   if (deck.title.includes('SALUTE')) return 'Element';
   if (deck.title.includes('Orders')) return 'Text';
   return 'Answer';
+}
+
+// Pick which side is the cue vs. the answer, and whether to require typed
+// recall. We reverse (show definition, recall the term) when the back is
+// meaningfully longer than the front — short answers are typeable and the
+// lev-ratio match is reliable.
+function flashCardConfig(deckId, deck, item, card, browse) {
+  const f = item.front || '', b = item.back || '';
+  const orderedSynthetic = /^Position\s+\d+$/.test(b);
+  const isLineFallback = typeof item.id === 'string' && item.id.includes('#L');
+  const swap = !orderedSynthetic && !isLineFallback && b.length >= 24 && b.length > f.length * 1.6 && f.length <= 40;
+  const cue = swap ? b : f;
+  const answer = swap ? f : b;
+  const isPhoneticOrNumbers = deckId === 'phonetic' || deckId === 'numbers';
+  const frontPrompt = isPhoneticOrNumbers ? 'Letter / digit' : pairFrontPrompt(deck);
+  const backPrompt = pairBackPrompt(deck);
+  // When swapping, label the long cue as a "Description" (or deck-specific
+  // semantic label if available) and the short answer side with the term type.
+  const swapCueLabel = (backPrompt === 'Answer') ? 'Description' : backPrompt;
+  const cuePrompt = swap ? swapCueLabel : frontPrompt;
+  const answerPrompt = swap ? frontPrompt : backPrompt;
+  const requireCommit = !browse && (card.box || 0) <= 1 && !orderedSynthetic && answer.length <= 32;
+  return {
+    swap, cue, answer, cuePrompt, answerPrompt, requireCommit,
+    cueIsLong: cue.length > 24,
+    answerIsLong: answer.length > 24,
+  };
 }
 
 // ============================================================
