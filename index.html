@@ -1412,6 +1412,10 @@ function setTopbar({ title, leftIcon, leftAction, rightIcon, rightAction, rightL
 // ---------- screen mount ----------
 function mount(el) {
   const screen = $('#screen');
+  // Stop media from the previous screen — detached <audio> nodes keep playing
+  // in some browsers, and SpeechSynthesisUtterance has no DOM tie-in at all.
+  screen.querySelectorAll('audio,video').forEach(a => { try { a.pause(); } catch(_) {} });
+  if (window.speechSynthesis) { try { window.speechSynthesis.cancel(); } catch(_) {} }
   screen.innerHTML = '';
   screen.appendChild(el);
   screen.scrollTop = 0;
