@@ -2658,8 +2658,8 @@ route(/^\/d\/([^/]+)\/flash(\?.*)?$/, (deckId) => {
     function showRate() {
       // For mature cards (no commit), show 3-button rating; for new cards, just continue
       if (requireCommit) {
-        const next = h('div', { class: 'fc-rate', style: 'grid-template-columns:1fr' });
-        next.appendChild(h('button', { class: 'btn btn-primary', text: 'Next', onclick: () => { idx++; render(); } }));
+        const next = h('div', { style: 'width:88vw;max-width:480px;margin:var(--s-4) auto 0' });
+        next.appendChild(h('button', { class: 'btn btn-primary btn-block', text: 'Next', onclick: () => { idx++; render(); } }));
         wrap.appendChild(next);
         return;
       }
