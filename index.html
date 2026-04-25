@@ -176,6 +176,10 @@ a { color: var(--accent); text-decoration: none; }
 .fc-meta { width: 100%; display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--s-3); }
 .fc-progress { flex: 1; height: 2px; background: var(--surface-2); border-radius: 2px; margin: 0 var(--s-3); overflow: hidden; }
 .fc-progress > i { display: block; height: 100%; background: var(--accent); transition: width var(--d-std) var(--ease-std); }
+.audio-toggle { display: flex; align-items: center; justify-content: center; gap: 10px; height: 64px; font-size: 1.0625rem; }
+.audio-bar { height: 4px; background: var(--surface-2); border-radius: 2px; overflow: hidden; margin-top: var(--s-3); }
+.audio-bar > i { display: block; height: 100%; background: var(--accent); transition: width 100ms linear; }
+.audio-time { margin-top: 6px; text-align: center; font-variant-numeric: tabular-nums; }
 .fc-card-area { width: 88vw; max-width: 480px; min-height: 60vh; perspective: 1200px; margin: 0 auto; }
 .fc-card { position: relative; width: 100%; height: 100%; min-height: 60vh; transform-style: preserve-3d; transition: transform var(--d-flip) var(--ease-std); }
 .fc-card.is-flipped { transform: rotateY(180deg); }
@@ -1179,7 +1183,9 @@ const ICON = {
   retry:   '<svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.5 15a9 9 0 1 0 2.1-9.4L1 10"/></svg>',
   x:       '<svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
   check:   '<svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>',
-  timer:   '<svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><polyline points="12 9 12 13 15 15"/><line x1="9" y1="2" x2="15" y2="2"/></svg>'
+  timer:   '<svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><polyline points="12 9 12 13 15 15"/><line x1="9" y1="2" x2="15" y2="2"/></svg>',
+  play:    '<svg class="icon" viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20"/></svg>',
+  pause:   '<svg class="icon" viewBox="0 0 24 24"><line x1="9" y1="5" x2="9" y2="19"/><line x1="15" y1="5" x2="15" y2="19"/></svg>'
 };
 
 // ---------- utils ----------
@@ -1934,19 +1940,57 @@ route(/^\/d\/([^/]+)\/audio$/, (deckId) => {
 
   const card = h('div', { class: 'card card-pad' });
   if (b64) {
-    const audio = h('audio', { controls: 'controls', preload: 'metadata', style: 'width:100%' });
+    const audio = h('audio', { preload: 'metadata' });
     audio.src = b64.startsWith('data:') ? b64 : 'data:audio/mp3;base64,' + b64;
-    card.appendChild(audio);
+    const btn = h('button', { class: 'btn btn-primary btn-block audio-toggle' });
+    const fmt = (s) => isFinite(s) && s >= 0 ? `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}` : '0:00';
+    const setLabel = () => {
+      const playing = !audio.paused && !audio.ended;
+      btn.innerHTML = `${playing ? ICON.pause : ICON.play}<span>${playing ? 'Pause' : 'Play'}</span>`;
+    };
+    btn.onclick = () => { audio.paused ? audio.play().catch(() => {}) : audio.pause(); };
+    audio.addEventListener('play', setLabel);
+    audio.addEventListener('pause', setLabel);
+    audio.addEventListener('ended', setLabel);
+    setLabel();
+
+    const bar = h('div', { class: 'audio-bar' });
+    const fill = h('i');
+    bar.appendChild(fill);
+    const time = h('div', { class: 't-caption audio-time' });
+    const updateTime = () => {
+      const cur = audio.currentTime || 0, dur = audio.duration || 0;
+      fill.style.width = dur ? `${(cur / dur) * 100}%` : '0%';
+      time.textContent = `${fmt(cur)} / ${fmt(dur)}`;
+    };
+    audio.addEventListener('timeupdate', updateTime);
+    audio.addEventListener('loadedmetadata', updateTime);
+    updateTime();
+
+    card.append(audio, btn, bar, time);
     if (stored) card.appendChild(h('div', { class: 't-caption', style: 'margin-top:8px', text: 'Imported recording (stored on this phone)' }));
   } else {
     card.appendChild(h('div', { class: 'banner', text: 'No recording bundled with this app. Settings → Bundled recordings to import an MP3, or tap below to hear the device voice.' }));
-    const ttsBtn = h('button', { class: 'btn btn-primary btn-block', text: 'Read aloud (TTS)' });
+    const ttsBtn = h('button', { class: 'btn btn-primary btn-block audio-toggle' });
+    let speaking = false;
+    const setLabel = () => {
+      ttsBtn.innerHTML = `${speaking ? ICON.pause : ICON.play}<span>${speaking ? 'Stop' : 'Read aloud (TTS)'}</span>`;
+    };
+    setLabel();
     ttsBtn.onclick = () => {
       if (!window.speechSynthesis) return alert('Speech synthesis not supported on this browser.');
+      if (speaking) {
+        window.speechSynthesis.cancel();
+        speaking = false; setLabel();
+        return;
+      }
       window.speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(lines.join(' '));
       u.rate = 0.95; u.lang = 'en-US';
+      u.onend = () => { speaking = false; setLabel(); };
+      u.onerror = () => { speaking = false; setLabel(); };
       window.speechSynthesis.speak(u);
+      speaking = true; setLabel();
     };
     card.appendChild(ttsBtn);
   }
